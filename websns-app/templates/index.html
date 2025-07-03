@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>掲示板</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>掲示板</h1>
+    <form action="/post" method="post">
+        <textarea name="content" placeholder="メッセージを入力" required></textarea><br>
+        <button type="submit">投稿</button>
+    </form>
+
+    <hr>
+    <ul>
+    {% for msg in messages %}
+        <li>{{ msg[1] }}</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

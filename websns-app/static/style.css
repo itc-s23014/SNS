@@ -1,0 +1,8 @@
+body {
+    font-family: Arial;
+    margin: 40px;
+}
+textarea {
+    width: 300px;
+    height: 100px;
+}
