@@ -1,17 +1,18 @@
 from flask import Flask, render_template, request, redirect, flash
 import mysql.connector
-
+import os
+from dotenv import load_dotenv
 app = Flask(__name__)
 app.secret_key = 'secret_key'
 
+load_dotenv()
 def get_connection():
     return mysql.connector.connect(
-        host='localhost',
-        user='flaskuser',         
-        password='yourpassword',   
-        database='flaskapp'
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME")
     )
-
 def init_db():
     conn = get_connection()
     cursor = conn.cursor()
