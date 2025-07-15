@@ -3,10 +3,10 @@
 <head><title>ホームページ</title></head>
 <body>
   <h1>メッセージ一覧</h1>
-  <form action="/post" method="post">
+  <!-- <form action="/post" method="post">
     <input type="text" name="content">
     <input type="submit" value="投稿">
-  </form>
+  </form> -->
   <ul>
     {% for message in messages %}
       <li>{{ message[1] }}</li>

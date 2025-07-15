@@ -60,6 +60,10 @@ def post():
     conn.close()
     return redirect('/')
 
+@app.route('/post', methods=['GET'])
+def post_form():
+    return render_template('post.html')
+
 @app.route('/login', methods=['GET'])
 def login_form():
     return render_template('login.html')
@@ -77,7 +81,7 @@ def login_post():
     if user:
         return redirect('/')
     else:
-        flash('パスワードまたはユーザー名が間違っています', 'error')
+        flash("adress or password is incorret","error")
         cursor.close()
         conn.close()
         return redirect('/login')
