@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新規登録画面</title>
+</head>
+<body>
+    <h2>新規登録</h2>
+    <form action="{{ url_for('register') }}" method="post">
+        <label for="username">ユーザー名:</label><br>
+        <input type="text" id="username" name="username"><br>
+        <label for="password">パスワード:</label><br>
+        <input type="password" id="password" name="password"><br><br>
+        <input type="submit" value="登録">
+    </form>
+    <br>
+    <p>ログインの場合は<a href="/login"></a>こちら。</p>
+</body>
+</html>
