@@ -1,0 +1,4 @@
+CREATE DATABASE IF NOT EXISTS flaskapp;
+CREATE USER IF NOT EXISTS 'flaskuser'@'%' IDENTIFIED BY 'yourpassword';
+GRANT ALL PRIVILEGES ON flaskapp.* TO 'flaskuser'@'%';
+FLUSH PRIVILEGES;

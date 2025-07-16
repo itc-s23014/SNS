@@ -25,6 +25,7 @@ def init_db():
     conn.commit()
     cursor.close()
     conn.close()
+    print("Database initialized successfully.")
 
 def init_usersdb():
     conn = get_connection()
@@ -60,6 +61,19 @@ def post():
     cursor.close()
     conn.close()
     return redirect('/')
+
+@app.route('/',methods=['postpagebtn'])
+def page_post_transition():
+    return redirect('/post')
+
+@app.route('/', methods=['mypagebtn'])
+def page_mypage_transition():
+    return redirect('/mypage')
+
+
+@app.route('/mypage', methods=['GET'])
+def mypage():
+    return render_template('mypage.html')
 
 @app.route('/post', methods=['GET'])
 def post_form():
