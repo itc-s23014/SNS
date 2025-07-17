@@ -2,6 +2,12 @@
 <html>
 <head><title>ホームページ</title></head>
 <body>
+  <!-- セッションの確認; -->
+  <!-- {% if session.get('user_id') %}
+    <p>ログイン中のユーザーID: {{ session['user_id'] }}</p>
+  {% else %}
+    <p>ログインしていません。</p>
+  {% endif %} -->
   <form method="postpagebtn" action="/post">
   <input type="submit" value="投稿する",name = "postpagebtn", onclick="location.href='/post'">
   </form>
@@ -14,8 +20,8 @@
     <input type="submit" value="投稿">
   </form> -->
   <ul>
-    {% for message in messages %}
-      <li>{{ message[1] }}</li>
+    {% for post in posts %}
+      <li>{{ post[1] }}</li>
     {% endfor %}
   </ul>
 </body>

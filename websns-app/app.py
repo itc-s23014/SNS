@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, flash, session
 import mysql.connector
 import os
 from dotenv import load_dotenv
@@ -17,7 +17,7 @@ def init_db():
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS messages (
+        CREATE TABLE IF NOT EXISTS Posts (
             id INT AUTO_INCREMENT PRIMARY KEY,
             content TEXT
         )
@@ -45,18 +45,26 @@ def init_usersdb():
 def index():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM messages')
-    messages = cursor.fetchall()
+    cursor.execute('SELECT * FROM Posts')
+    posts = cursor.fetchall()
     cursor.close()
     conn.close()
-    return render_template('index.html', messages=messages)
+    return render_template('index.html', posts=posts)
 
 @app.route('/post', methods=['POST'])
 def post():
+    if 'user_id' not in session:
+        return redirect('/login')
+    
     content = request.form['content']
+    user_id = session['user_id']
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO messages (content) VALUES (%s)', (content,))
+    cursor.execute('SELECT username FROM users WHERE id = %s', (user_id,))
+    user = cursor.fetchone()
+    username = user[0] if user else '名無し'
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO Posts (content,username) VALUES (%s,%s)', (content,username))
     conn.commit()
     cursor.close()
     conn.close()
@@ -94,13 +102,13 @@ def login_post():
     cursor.close()
     conn.close()
     if user:
+        session['user_id'] = user[0]
         return redirect('/')
     else:
         flash("adress or password is incorret","error")
         cursor.close()
         conn.close()
         return redirect('/login')
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -121,4 +129,4 @@ def register():
 if __name__ == '__main__':
     init_db()
     init_usersdb()
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)  
