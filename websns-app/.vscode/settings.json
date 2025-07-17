@@ -12,20 +12,6 @@
             "name": "messagetest",
             "database": "flaskapp",
             "username": "flaskuser"
-        },
-        {
-            "mysqlOptions": {
-                "authProtocol": "default",
-                "enableSsl": "Disabled"
-            },
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 3307,
-            "driver": "MariaDB",
-            "name": "flaskapp",
-            "database": "flaskapp",
-            "username": "flaskuser",
-            "password": "root"
         }
     ]
 }
