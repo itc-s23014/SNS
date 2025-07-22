@@ -7,9 +7,10 @@ USE flaskapp;
 
 CREATE TABLE IF NOT EXISTS Posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    content TEXT
-    username VARCHAR(50) NOT NULL,
+    content TEXT,
+    username VARCHAR(50) NOT NULL
 );
+
 
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
