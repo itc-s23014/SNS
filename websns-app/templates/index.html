@@ -8,9 +8,10 @@
   {% else %}
     <p>ログインしていません。</p>
   {% endif %} -->
-  <form method="postpagebtn" action="/post">
+<form method="postpagebtn" action="/post">
   <input type="submit" value="投稿する",name = "postpagebtn", onclick="location.href='/post'">
-  </form>
+</form>
+
   <form method="GET" action="/mypage">
     <input type="submit" value="マイページ" name="mypagebtn">
 </form>
@@ -19,10 +20,16 @@
     <input type="text" name="content">
     <input type="submit" value="投稿">
   </form> -->
-  <ul>
+  <!-- <ul>
     {% for post in posts %}
-      <li>{{ post[1] }}</li>
+      <li>{post[0]:}{{ post[1] }}</li>
     {% endfor %}
-  </ul>
+  </ul> -->
+  <ul>
+  {% for post in posts %}
+    <li>{{ post[0] }}: {{ post[1] }}</li>
+  {% endfor %}
+</ul>
 </body>
 </html>
+

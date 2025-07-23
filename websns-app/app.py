@@ -45,7 +45,7 @@ def init_usersdb():
 def index():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM Posts')
+    cursor.execute('SELECT username, content FROM Posts')
     posts = cursor.fetchall()
     cursor.close()
     conn.close()
