@@ -13,34 +13,6 @@ def get_connection():
         password=os.getenv("DB_PASSWORD"),
         database=os.getenv("DB_NAME")
     )
-def init_db():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Posts (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            content TEXT
-        )
-    ''')
-    conn.commit()
-    cursor.close()
-    conn.close()
-    print("Database initialized successfully.")
-
-def init_usersdb():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(50) NOT NULL UNIQUE,
-            password VARCHAR(50) NOT NULL
-        )
-    ''')
-    conn.commit()
-    cursor.close()
-    conn.close()
-
 @app.route('/')
 def index():
     conn = get_connection()
@@ -163,6 +135,4 @@ def register():
 
 
 if __name__ == '__main__':
-    init_db()
-    init_usersdb()
     app.run(host='0.0.0.0', port=5000, debug=True)  
