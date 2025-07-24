@@ -13,3 +13,19 @@ button {
   cursor: pointer;
   font-size: 20px;
 }
+.comment-form {
+    display: none; 
+    margin-top: 10px;
+  }
+  .comments {
+    margin-top: 10px;
+    padding-left: 20px;
+  }
+  .like-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  .like-button span {
+    font-size: 1.5em;
+  }

@@ -21,6 +21,21 @@ def index():
 
     posts = cursor.fetchall()
 
+    comments_by_post = {}
+    cursor.execute('''
+        SELECT post_id, username, content 
+        FROM messages 
+        JOIN users ON messages.sender_id = users.id
+    ''')
+    comments = cursor.fetchall()
+    for comment in comments:
+        post_id = comment[0]
+        if post_id not in comments_by_post:
+            comments_by_post[post_id] = []
+        comments_by_post[post_id].append({'username': comment[1], 'content': comment[2]})
+
+        
+
     like_post_ids = []
     if 'user_id' in session:
         user_id = session['user_id']
@@ -28,7 +43,7 @@ def index():
         like_post_ids = [row[0] for row in cursor.fetchall()]
     cursor.close()
     conn.close()
-    return render_template('index.html', posts=posts,like_post_ids=like_post_ids)
+    return render_template('index.html', posts=posts,like_post_ids=like_post_ids,comments_by_post=comments_by_post)
 
 @app.route('/like', methods=['POST'])
 def like_post():
@@ -57,7 +72,27 @@ def like_post():
     
     conn.close()
     return redirect('/')
+@app.route('/comment/<int:post_id>', methods=['POST'])
+def comment(post_id):
+    if 'user_id' not in session:
+        return redirect('/login')
 
+    content = request.form.get('content')
+    print(f"Received post_id: {post_id}, content: {content}") 
+
+    if not content:
+        return "コメントが空です", 400
+
+    user_id = session['user_id']
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO messages (content, sender_id, post_id) VALUES (%s, %s, %s)', (content, user_id, post_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return redirect('/')
 
 @app.route('/post', methods=['POST'])
 def post():
