@@ -1,35 +1,37 @@
 <!DOCTYPE html>
 <html>
-<head><title>ホームページ</title></head>
+<head><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>ホームページ</title>
+</head>
 <body>
-  <!-- セッションの確認; -->
-  <!-- {% if session.get('user_id') %}
-    <p>ログイン中のユーザーID: {{ session['user_id'] }}</p>
-  {% else %}
-    <p>ログインしていません。</p>
-  {% endif %} -->
-<form method="postpagebtn" action="/post">
-  <input type="submit" value="投稿する",name = "postpagebtn", onclick="location.href='/post'">
+
+<form method="GET" action="/post">
+  <input type="submit" value="投稿する">
 </form>
 
-  <form method="GET" action="/mypage">
-    <input type="submit" value="マイページ" name="mypagebtn">
+<form method="GET" action="/mypage">
+  <input type="submit" value="マイページ">
 </form>
-  <h1>メッセージ一覧</h1>
-  <!-- <form action="/post" method="post">
-    <input type="text" name="content">
-    <input type="submit" value="投稿">
-  </form> -->
-  <!-- <ul>
-    {% for post in posts %}
-      <li>{post[0]:}{{ post[1] }}</li>
-    {% endfor %}
-  </ul> -->
-  <ul>
+
+<h1>メッセージ一覧</h1>
+
+<ul>
   {% for post in posts %}
-    <li>{{ post[0] }}: {{ post[1] }}</li>
+    <li>
+      {{ post[0] }}: {{ post[1] }}
+      <form method="POST" action="/like" style="display:inline;">
+        <input type="hidden" name="post_id" value="{{ post[2] }}">
+        <button type="submit">
+          {% if post[2] in like_post_ids %}
+            <span style="color:red;">❤️</span>  
+          {% else %}
+            <span style="color:gray;">🤍</span> 
+          {% endif %}
+        </button>
+      </form>
+    </li>
   {% endfor %}
 </ul>
+
 </body>
 </html>
-
