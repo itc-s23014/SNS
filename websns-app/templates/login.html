@@ -2,22 +2,25 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>ログイン</title>
+  <link rel="stylesheet" href="../static/login.css">
+  <title>Login</title>
 </head>
 <body>
   <div class="login-container">
-    <h1>ログイン</h1>
+    <h1>Login</h1>
     <form method="POST" action="/login">
       <div class="form-group">
-        <label for="username">ユーザー名</label>
+        <label for="username">Username</label>
         <input type="text" id="username" name="username" required>
       </div>
       <div class="form-group">
-        <label for="password">パスワード</label>
+        <label for="password">Password</label>
         <input type="password" id="password" name="password" required>
       </div>
-      <button type="submit">ログイン</button>
-      <p>アカウントをお持ちでない方は <a href="/register">こちら</a> から登録してください。</p>
+      <div class="form-footer"></div>
+        <a href="/register">新規登録</a>
+        <button type="submit">登録</button>
+      </div>
     </form>
   </div>
 </body>
