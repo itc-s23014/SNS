@@ -45,11 +45,47 @@ def init_usersdb():
 def index():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT username, content FROM Posts')
+    cursor.execute('SELECT username, content,id FROM Posts')
+
     posts = cursor.fetchall()
+
+    like_post_ids = []
+    if 'user_id' in session:
+        user_id = session['user_id']
+        cursor.execute('SELECT post_id FROM Likes WHERE user_id = %s', (user_id,))
+        like_post_ids = [row[0] for row in cursor.fetchall()]
     cursor.close()
     conn.close()
-    return render_template('index.html', posts=posts)
+    return render_template('index.html', posts=posts,like_post_ids=like_post_ids)
+
+@app.route('/like', methods=['POST'])
+def like_post():
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    post_id = request.form['post_id']
+    user_id = session['user_id']
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM Likes WHERE post_id = %s AND user_id = %s', (post_id, user_id))
+
+    if cursor.fetchone():
+    
+        cursor.execute('DELETE FROM Likes WHERE post_id = %s AND user_id = %s', (post_id, user_id))
+        conn.commit()
+        flash("Like removed.", "info")
+    else:
+      
+        cursor.execute('INSERT INTO Likes (post_id, user_id) VALUES (%s, %s)', (post_id, user_id))
+        conn.commit()
+        flash("Post liked successfully!", "success")
+
+    cursor.close()
+    
+    conn.close()
+    return redirect('/')
+
 
 @app.route('/post', methods=['POST'])
 def post():
