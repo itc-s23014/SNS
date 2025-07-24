@@ -13,34 +13,6 @@ def get_connection():
         password=os.getenv("DB_PASSWORD"),
         database=os.getenv("DB_NAME")
     )
-def init_db():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Posts (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            content TEXT
-        )
-    ''')
-    conn.commit()
-    cursor.close()
-    conn.close()
-    print("Database initialized successfully.")
-
-def init_usersdb():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(50) NOT NULL UNIQUE,
-            password VARCHAR(50) NOT NULL
-        )
-    ''')
-    conn.commit()
-    cursor.close()
-    conn.close()
-
 @app.route('/')
 def index():
     conn = get_connection()
@@ -49,6 +21,21 @@ def index():
 
     posts = cursor.fetchall()
 
+    comments_by_post = {}
+    cursor.execute('''
+        SELECT post_id, username, content 
+        FROM messages 
+        JOIN users ON messages.sender_id = users.id
+    ''')
+    comments = cursor.fetchall()
+    for comment in comments:
+        post_id = comment[0]
+        if post_id not in comments_by_post:
+            comments_by_post[post_id] = []
+        comments_by_post[post_id].append({'username': comment[1], 'content': comment[2]})
+
+        
+
     like_post_ids = []
     if 'user_id' in session:
         user_id = session['user_id']
@@ -56,7 +43,7 @@ def index():
         like_post_ids = [row[0] for row in cursor.fetchall()]
     cursor.close()
     conn.close()
-    return render_template('index.html', posts=posts,like_post_ids=like_post_ids)
+    return render_template('index.html', posts=posts,like_post_ids=like_post_ids,comments_by_post=comments_by_post)
 
 @app.route('/like', methods=['POST'])
 def like_post():
@@ -85,7 +72,27 @@ def like_post():
     
     conn.close()
     return redirect('/')
+@app.route('/comment/<int:post_id>', methods=['POST'])
+def comment(post_id):
+    if 'user_id' not in session:
+        return redirect('/login')
 
+    content = request.form.get('content')
+    print(f"Received post_id: {post_id}, content: {content}") 
+
+    if not content:
+        return "コメントが空です", 400
+
+    user_id = session['user_id']
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO messages (content, sender_id, post_id) VALUES (%s, %s, %s)', (content, user_id, post_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return redirect('/')
 
 @app.route('/post', methods=['POST'])
 def post():
@@ -163,6 +170,4 @@ def register():
 
 
 if __name__ == '__main__':
-    init_db()
-    init_usersdb()
     app.run(host='0.0.0.0', port=5000, debug=True)  

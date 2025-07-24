@@ -1,37 +1,70 @@
 <!DOCTYPE html>
 <html>
-<head><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <title>ホームページ</title>
 </head>
 <body>
 
-<form method="GET" action="/post">
-  <input type="submit" value="投稿する">
-</form>
+<header>
+  <form method="GET" action="/post" style="display:inline;">
+    <input type="submit" value="投稿する">
+  </form>
+  <form method="GET" action="/mypage" style="display:inline;">
+    <input type="submit" value="マイページ">
+  </form>
+</header>
 
-<form method="GET" action="/mypage">
-  <input type="submit" value="マイページ">
-</form>
+<main>
+  <h1>メッセージ一覧</h1>
+  <ul>
+    {% for post in posts %}
+      <li>
+        <strong>{{ post[0] }}</strong>: {{ post[1] }}
+        <form method="POST" action="/like" style="display:inline;">
+          <input type="hidden" name="post_id" value="{{ post[2] }}">
+          <button type="submit" class="like-button" aria-label="いいね">
+            {% if post[2] in like_post_ids %}
+              <span style="color:red;">❤️</span>
+            {% else %}
+              <span style="color:gray;">🤍</span>
+            {% endif %}
+          </button>
+        </form>
+        <button type="button" onclick="toggleCommentForm('{{ post[2]|safe }}')" aria-label="コメントを追加">💬 コメント</button>
 
-<h1>メッセージ一覧</h1>
+        <div id="comment-form-{{ post[2] }}" class="comment-form">
+          <form method="POST" action="/comment/{{ post[2] }}">
+            <textarea name="content" rows="2" cols="50" placeholder="コメントを入力してください"></textarea>
+            <br>
+            <button type="submit">送信</button>
+          </form>
+        </div>
 
-<ul>
-  {% for post in posts %}
-    <li>
-      {{ post[0] }}: {{ post[1] }}
-      <form method="POST" action="/like" style="display:inline;">
-        <input type="hidden" name="post_id" value="{{ post[2] }}">
-        <button type="submit">
-          {% if post[2] in like_post_ids %}
-            <span style="color:red;">❤️</span>  
-          {% else %}
-            <span style="color:gray;">🤍</span> 
-          {% endif %}
-        </button>
-      </form>
-    </li>
-  {% endfor %}
-</ul>
+    
+        <div class="comments">
+          <h3>コメント一覧:</h3>
+          <ul>
+            {% for comment in comments_by_post[post[2]] %}
+              <li><strong>{{ comment.username }}</strong>: {{ comment.content }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+</main>
+
+<script>
+  function toggleCommentForm(postId) {
+    const form = document.getElementById(`comment-form-${postId}`);
+    if (form.style.display === "none" || form.style.display === "") {
+      form.style.display = "block";
+    } else {
+      form.style.display = "none";
+    }
+  }
+</script>
 
 </body>
 </html>

@@ -25,3 +25,10 @@ CREATE TABLE IF NOT EXISTS Likes (
     FOREIGN KEY (post_id) REFERENCES Posts(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    content TEXT,
+    sender_id INT NOT NULL,
+    post_id INT NOT NULL
+);
