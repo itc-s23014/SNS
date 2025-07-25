@@ -58,18 +58,18 @@ def like_post():
     cursor.execute('SELECT * FROM Likes WHERE post_id = %s AND user_id = %s', (post_id, user_id))
 
     if cursor.fetchone():
-    
+
         cursor.execute('DELETE FROM Likes WHERE post_id = %s AND user_id = %s', (post_id, user_id))
         conn.commit()
         flash("Like removed.", "info")
     else:
-      
+
         cursor.execute('INSERT INTO Likes (post_id, user_id) VALUES (%s, %s)', (post_id, user_id))
         conn.commit()
         flash("Post liked successfully!", "success")
 
     cursor.close()
-    
+
     conn.close()
     return redirect('/')
 @app.route('/comment/<int:post_id>', methods=['POST'])
@@ -98,7 +98,7 @@ def comment(post_id):
 def post():
     if 'user_id' not in session:
         return redirect('/login')
-    
+
     content = request.form['content']
     user_id = session['user_id']
     conn = get_connection()
