@@ -17,7 +17,7 @@ def get_connection():
 def index():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT username, content,id FROM Posts')
+    cursor.execute('SELECT username, content,id,user_id FROM Posts')
 
     posts = cursor.fetchall()
 
@@ -33,8 +33,6 @@ def index():
         if post_id not in comments_by_post:
             comments_by_post[post_id] = []
         comments_by_post[post_id].append({'username': comment[1], 'content': comment[2]})
-
-        
 
     like_post_ids = []
     if 'user_id' in session:
@@ -54,6 +52,7 @@ def like_post():
     user_id = session['user_id']
     conn = get_connection()
     cursor = conn.cursor()
+
 
     cursor.execute('SELECT * FROM Likes WHERE post_id = %s AND user_id = %s', (post_id, user_id))
 
@@ -107,11 +106,47 @@ def post():
     user = cursor.fetchone()
     username = user[0] if user else '名無し'
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO Posts (content,username) VALUES (%s,%s)', (content,username))
+    cursor.execute('INSERT INTO Posts (content,username,user_id) VALUES (%s,%s,%s)', (content,username,user_id))
     conn.commit()
     cursor.close()
     conn.close()
     return redirect('/')
+
+@app.route('/follow', methods=['POST'])
+def follow():
+    if 'user_id' not in session:
+        return redirect('/login')
+    
+    user_id = session['user_id']
+    followed_user_id = request.form['followed_user_id'] 
+    print("follwerd_user_id:", followed_user_id) 
+    if str(user_id) == str(followed_user_id):
+
+        flash("自分をフォローすることはできません", "warning")
+        return redirect('/')
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+
+ 
+    cursor.execute(
+        'UPDATE users SET follow_count = follow_count + 1 WHERE id = %s',
+        (user_id,)
+    )
+    
+    cursor.execute(
+        'UPDATE users SET follower_count = follower_count + 1 WHERE id = %s',
+        (followed_user_id,)
+    )
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    flash("フォローしました", "success")
+    return redirect('/')
+
+
 
 @app.route('/',methods=['postpagebtn'])
 def page_post_transition():
