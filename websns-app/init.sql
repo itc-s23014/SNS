@@ -7,15 +7,20 @@ USE flaskapp;
 
 CREATE TABLE IF NOT EXISTS Posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
     content TEXT,
     username VARCHAR(50) NOT NULL
 );
 
+
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(50) NOT NULL
+    password VARCHAR(50) NOT NULL,
+    follow_count INT DEFAULT 0,
+    follower_count INT DEFAULT 0
 );
+
 
 CREATE TABLE IF NOT EXISTS Likes (
     id INT AUTO_INCREMENT PRIMARY KEY,
