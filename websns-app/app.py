@@ -17,8 +17,7 @@ def get_connection():
 def index():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT username, content,id,user_id FROM Posts')
-
+    cursor.execute('SELECT username, content, id, user_id FROM Posts')
     posts = cursor.fetchall()
 
     comments_by_post = {}
@@ -35,14 +34,29 @@ def index():
         comments_by_post[post_id].append({'username': comment[1], 'content': comment[2]})
 
     like_post_ids = []
+    followed_user_ids = []
+
     if 'user_id' in session:
         user_id = session['user_id']
+
+
         cursor.execute('SELECT post_id FROM Likes WHERE user_id = %s', (user_id,))
         like_post_ids = [row[0] for row in cursor.fetchall()]
+
+   
+        cursor.execute('SELECT followed_id FROM Follows WHERE follower_id = %s', (user_id,))
+        followed_user_ids = [row[0] for row in cursor.fetchall()]
+
     cursor.close()
     conn.close()
-    return render_template('index.html', posts=posts,like_post_ids=like_post_ids,comments_by_post=comments_by_post)
 
+    return render_template(
+        'index.html',
+        posts=posts,
+        like_post_ids=like_post_ids,
+        comments_by_post=comments_by_post,
+        followed_user_ids=followed_user_ids 
+    )
 @app.route('/like', methods=['POST'])
 def like_post():
     if 'user_id' not in session:
@@ -116,35 +130,43 @@ def post():
 def follow():
     if 'user_id' not in session:
         return redirect('/login')
-    
-    user_id = session['user_id']
-    followed_user_id = request.form['followed_user_id'] 
-    print("follwerd_user_id:", followed_user_id) 
-    if str(user_id) == str(followed_user_id):
 
+    user_id = session['user_id']
+    followed_user_id = request.form['followed_user_id']
+
+    if str(user_id) == str(followed_user_id):
         flash("自分をフォローすることはできません", "warning")
         return redirect('/')
-    
+
     conn = get_connection()
     cursor = conn.cursor()
 
- 
-    cursor.execute(
-        'UPDATE users SET follow_count = follow_count + 1 WHERE id = %s',
-        (user_id,)
-    )
     
-    cursor.execute(
-        'UPDATE users SET follower_count = follower_count + 1 WHERE id = %s',
-        (followed_user_id,)
-    )
+    cursor.execute('SELECT * FROM Follows WHERE follower_id = %s AND followed_id = %s', (user_id, followed_user_id))
+    follow_record = cursor.fetchone()
+
+    if follow_record:
+
+        cursor.execute('DELETE FROM Follows WHERE follower_id = %s AND followed_id = %s', (user_id, followed_user_id))
+
+        cursor.execute('UPDATE users SET follow_count = follow_count - 1 WHERE id = %s', (user_id,))
+        cursor.execute('UPDATE users SET follower_count = follower_count - 1 WHERE id = %s', (followed_user_id,))
+        flash("フォローを解除しました", "info")
+    else:
+      
+        cursor.execute('INSERT INTO Follows (follower_id, followed_id) VALUES (%s, %s)', (user_id, followed_user_id))
+
+        
+        cursor.execute('UPDATE users SET follow_count = follow_count + 1 WHERE id = %s', (user_id,))
+        cursor.execute('UPDATE users SET follower_count = follower_count + 1 WHERE id = %s', (followed_user_id,))
+        flash("フォローしました", "success")
 
     conn.commit()
     cursor.close()
     conn.close()
 
-    flash("フォローしました", "success")
     return redirect('/')
+
 
 
 

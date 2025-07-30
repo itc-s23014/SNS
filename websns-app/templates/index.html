@@ -23,9 +23,13 @@
         <strong>{{ post[0] }}</strong>: {{ post[1] }}
         <form method="POST" action="/follow" style="display:inline;">
           <input type="hidden" name="followed_user_id" value="{{ post[3] }}">
-          <button type="submit" class="follow-button" aria-label="フォローする">
-            フォローする
-          </button>
+          {% if post[3] != session['user_id'] %}
+            {% if post[3] in followed_user_ids %}
+              <button type="submit" class="follow-button" aria-label="フォロー中">フォロー中</button>
+            {% else %}
+              <button type="submit" class="follow-button" aria-label="フォローする">フォローする</button>
+            {% endif %}
+          {% endif %}
         </form>
         <form method="POST" action="/like" style="display:inline;">
           <input type="hidden" name="post_id" value="{{ post[2] }}">
