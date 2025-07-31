@@ -7,13 +7,19 @@
 </head>
 <body>
     <h2>新規登録</h2>
-    <form action="{{ url_for('register') }}" method="post">
+    <form action="{{ url_for('register') }}" method="post" enctype="multipart/form-data">
         <label for="username">ユーザー名:</label><br>
         <input type="text" id="username" name="username"><br>
+    
         <label for="password">パスワード:</label><br>
         <input type="password" id="password" name="password"><br><br>
+    
+        <label for="profile_image">プロフィール画像:</label><br>
+        <input type="file" name="profile_image" accept="image/*"><br><br>
+    
         <input type="submit" value="登録">
     </form>
+    
     <br>
     <p>ログインの場合は<a href="/login"></a>こちら。</p>
 </body>
