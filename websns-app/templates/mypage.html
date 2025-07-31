@@ -4,8 +4,8 @@
 <body>
   <h1>mypage</h1>
   <ul>
-    {% for label, count in follow %}
-      <li><strong>{{ label }}</strong>: {{ count }}</li>
+    {% for follow, follower in follow %}
+      <li><strong>{{ follow }}</strong>: {{ follower }}</li>
     {% endfor %}
   </ul>
 </body>
