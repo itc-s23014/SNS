@@ -181,7 +181,24 @@ def page_mypage_transition():
 
 @app.route('/mypage', methods=['GET'])
 def mypage():
-    return render_template('mypage.html')
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    user_id = session['user_id']
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT follow_count, follower_count FROM users WHERE id = %s', (user_id,))
+    result = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if result is None:
+        follow_data = [("フォロー", 0), ("フォロワー", 0)]
+    else:
+        follow_data = [("フォロー", result[0]), ("フォロワー", result[1])]
+
+    return render_template('mypage.html', follow=follow_data)
+
 
 @app.route('/post', methods=['GET'])
 def post_form():

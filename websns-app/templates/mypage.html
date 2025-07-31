@@ -3,6 +3,11 @@
 <head><title>mypage</title></head>
 <body>
   <h1>mypage</h1>
-
+  <ul>
+    {% for label, count in follow %}
+      <li><strong>{{ label }}</strong>: {{ count }}</li>
+    {% endfor %}
+  </ul>
 </body>
 </html>
+
