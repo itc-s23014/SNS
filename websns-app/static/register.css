@@ -1,0 +1,52 @@
+/* register.css */
+
+/* 全体のフォームコンテナを調整 */
+.login-container {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+}
+
+/* 入力フィールドのフォーカス時のスタイル */
+input:focus {
+  outline: none;
+  border-color: #3b82f6; /* Tailwindのblue-500 */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+/* ラベルの文字サイズや色の微調整 */
+label {
+  color: #36465f; /* Tailwindのgray-700 */
+  font-size: 0.95rem;
+}
+
+/* エラー表示用（将来的に使う場合） */
+.input-error {
+  border-color: #ef4444; /* Tailwindのred-500 */
+  background-color: #fef2f2;
+}
+
+/* 登録ボタン */
+.submit-button {
+  background-color: #f87171; /* 赤系 */
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 9999px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+.submit-button:hover {
+  background-color: #ef4444;
+}
+
+/* リンクのスタイル調整 */
+a {
+  transition: color 0.2s ease;
+}
