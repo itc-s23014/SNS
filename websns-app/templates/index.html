@@ -333,92 +333,77 @@
                 </form>
             </div>
         </header>
-
         <div class="page-title">投稿一覧</div>
-
-        <div class="posts-container">
-            <!-- Sample Post 1 -->
-            <div class="post-item">
-                <div class="avatar">仲</div>
-                <div class="post-content">
+        <ul>
+          {% for post in posts %}
+            <li>
+              <div class="posts-container">
+                <div class="post-item">
+                  <div class="avatar">{{ post[0][:2] }}</div> 
+                  <div class="post-content">
                     <div class="post-header">
-                        <span class="username">仲村渠</span>
+                      <span class="username">{{ post[0] }}</span> 
                     </div>
-                    <div class="post-text">学校だるい</div>
+        
+                    <div class="post-text">{{ post[1] }}</div>  
+        
                     <div class="post-actions">
-                        <button class="action-btn" onclick="toggleCommentForm('1')">💬</button>
-                        <button class="action-btn like-btn">🤍</button>
-                        <button class="follow-btn">フォロー</button>
+                    
+                      <button class="action-btn" onclick="toggleCommentForm('{{ post[2] }}')">💬</button>
+        
+                     
+                      <form method="POST" action="/like" style="display:inline;">
+                        <input type="hidden" name="post_id" value="{{ post[2] }}">
+                        <button type="submit" class="like-button" aria-label="いいね">
+                          {% if post[2] in like_post_ids %}
+                            <span style="color:red;">❤️</span>
+                          {% else %}
+                            <span style="color:gray;">🤍</span>
+                          {% endif %}
+                        </button>
+                      </form>
+        
+                  
+                      {% if post[3] != session['user_id'] %}
+                      <form method="POST" action="/follow" style="display:inline;">
+                        <input type="hidden" name="followed_user_id" value="{{ post[3] }}">
+                        {% if post[3] in followed_user_ids %}
+                          <button type="submit" class="follow-button">フォロー中</button>
+                        {% else %}
+                          <button type="submit" class="follow-button">フォローする</button>
+                        {% endif %}
+                      </form>
+                      {% endif %}
                     </div>
-                    <div id="comment-form-1" class="comment-form">
-                        <form onsubmit="addComment(event, '1')">
-                            <textarea placeholder="コメントを入力してください" required></textarea>
-                            <button type="submit">送信</button>
-                        </form>
+        
+                
+                    <div id="comment-form-{{ post[2] }}" class="comment-form" style="display:none;">
+                      <form method="POST" action="/comment/{{ post[2] }}">
+                        <textarea name="content" rows="2" cols="50" placeholder="コメントを入力してください" required></textarea>
+                        <br>
+                        <button type="submit">送信</button>
+                      </form>
                     </div>
-                    <div id="comments-list-1" class="comments-list">
-                        <h3>コメント:</h3>
-                        <div class="comments-container"></div>
+        
+                   
+                    <div class="comments">
+                      <h3>コメント一覧:</h3>
+                      <ul>
+                        {% for comment in comments_by_post[post[2]] %}
+                          <li><strong>{{ comment.username }}</strong>: {{ comment.content }}</li>
+                        {% endfor %}
+                      </ul>
                     </div>
+                  </div>
                 </div>
-            </div>
-
-            <!-- Sample Post 2 -->
-            <div class="post-item">
-                <div class="avatar">ay</div>
-                <div class="post-content">
-                    <div class="post-header">
-                        <span class="username">ayaay</span>
-                    </div>
-                    <div class="post-text"><span class="hashtag">#バロランク募集</span> プラチナ1</div>
-                    <div class="post-actions">
-                        <button class="action-btn" onclick="toggleCommentForm('2')">💬</button>
-                        <button class="action-btn like-btn">🤍</button>
-                        <button class="follow-btn">フォロー</button>
-                    </div>
-                    <div id="comment-form-2" class="comment-form">
-                        <form onsubmit="addComment(event, '2')">
-                            <textarea placeholder="コメントを入力してください" required></textarea>
-                            <button type="submit">送信</button>
-                        </form>
-                    </div>
-                    <div id="comments-list-2" class="comments-list">
-                        <h3>コメント:</h3>
-                        <div class="comments-container"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sample Post 3 -->
-            <div class="post-item">
-                <div class="avatar">ue</div>
-                <div class="post-content">
-                    <div class="post-header">
-                        <span class="username">uehara</span>
-                    </div>
-                    <div class="post-text">しんごいwにおgんw</div>
-                    <div class="post-actions">
-                        <button class="action-btn" onclick="toggleCommentForm('3')">💬</button>
-                        <button class="action-btn like-btn">🤍</button>
-                        <button class="follow-btn">フォロー</button>
-                    </div>
-                    <div id="comment-form-3" class="comment-form">
-                        <form onsubmit="addComment(event, '3')">
-                            <textarea placeholder="コメントを入力してください" required></textarea>
-                            <button type="submit">送信</button>
-                        </form>
-                    </div>
-                    <div id="comments-list-3" class="comments-list">
-                        <h3>コメント:</h3>
-                        <div class="comments-container"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+        
 
     <script>
-        // 現在のユーザー（デモ用）
+      
         const currentUser = "あなた";
 
         function toggleCommentForm(postId) {
@@ -427,7 +412,7 @@
             
             if (form.style.display === "none" || form.style.display === "") {
                 form.style.display = "block";
-                // コメントがある場合は表示
+         
                 const commentsContainer = commentsList.querySelector('.comments-container');
                 if (commentsContainer.children.length > 0) {
                     commentsList.classList.add('show');
@@ -452,7 +437,7 @@
                 return;
             }
             
-            // コメントを追加
+    
             const commentsList = document.getElementById(`comments-list-${postId}`);
             const commentsContainer = commentsList.querySelector('.comments-container');
             
@@ -468,20 +453,19 @@
             
             commentsContainer.appendChild(commentElement);
             
-            // コメントリストを表示
+
             commentsList.classList.add('show');
-            
-            // フォームをクリア
+      
             textarea.value = '';
             
-            // フォームを非表示にする
+
             const commentForm = document.getElementById(`comment-form-${postId}`);
             commentForm.style.display = "none";
             
             console.log('コメント追加完了');
         }
 
-        // テキストエリアの入力チェック
+       
         document.addEventListener('DOMContentLoaded', function() {
             const textareas = document.querySelectorAll('.comment-form textarea');
             textareas.forEach(textarea => {
@@ -495,12 +479,12 @@
                     }
                 });
                 
-                // 初期状態では無効
+          
                 button.disabled = true;
             });
         });
 
-        // Like button functionality
+
         document.querySelectorAll('.like-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 if (this.classList.contains('liked')) {
@@ -513,7 +497,7 @@
             });
         });
 
-        // Follow button functionality
+     
         document.querySelectorAll('.follow-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 if (this.classList.contains('following')) {
