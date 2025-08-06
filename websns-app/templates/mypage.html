@@ -1,8 +1,326 @@
 <!DOCTYPE html>
-<html>
-<head><title>mypage</title></head>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/mypage.css">
+    <title>マイページ</title>
+</head>
 <body>
-  <h1>mypage</h1>
+    <div class="container">
+        <!-- ヘッダー部分 -->
+        <header class="header">
+            <div class="header-nav">
+                <button class="back-btn" onclick="location.href='./'">⬅ 戻る</button>
+                <!-- <button class="edit-btn">編集</button> -->
+            </div>
+            <div class="user-info">
+                <div class="avatar">
+                    <span>T</span>
+                </div>
+                <span class="username">tarou</span>
+                <div class="follow-stats">
+                    <div class="follow-item">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">フォロー</span>
+                    </div>
+                    <div class="follow-item">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">フォロワー</span>
+                    </div>
+                </div>
+            </div>
+        </header>
 
+        <!-- タブメニュー -->
+        <nav class="tab-menu">
+            <button class="tab active" onclick="showTab('posts')">投稿</button>
+            <button class="tab" onclick="showTab('comments')">コメント</button>
+            <button class="tab" onclick="showTab('likes')">いいね</button>
+        </nav>
+
+        <!-- 投稿一覧 -->
+        <main id="posts" class="tab-content active">
+            <div class="posts">
+                <div class="post-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">T</div>
+                        <div class="post-username">tarou</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">あああああああ</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="post-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">T</div>
+                        <div class="post-username">tarou</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">こんにちは</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="post-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">T</div>
+                        <div class="post-username">tarou</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">今日は良い天気ですね</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="post-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">T</div>
+                        <div class="post-username">tarou</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">お疲れ様でした</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="post-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">T</div>
+                        <div class="post-username">tarou</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">美味しいランチを食べました</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="post-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">T</div>
+                        <div class="post-username">tarou</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">新しいプロジェクトが始まります</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="post-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">T</div>
+                        <div class="post-username">tarou</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">読書の時間が好きです</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="post-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">T</div>
+                        <div class="post-username">tarou</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">週末の予定を立てています</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- コメント一覧 -->
+        <main id="comments" class="tab-content">
+            <div class="posts">
+                <div class="comment-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">U</div>
+                        <div class="post-username">user123</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">素晴らしい投稿ですね！</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="comment-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">F</div>
+                        <div class="post-username">friend456</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">同感です。ありがとうございます。</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="comment-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">F</div>
+                        <div class="post-username">follower789</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">いつも楽しく拝見しています</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="comment-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">C</div>
+                        <div class="post-username">comment_user</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">参考になりました</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="comment-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">A</div>
+                        <div class="post-username">active_user</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">また見に来ます！</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="comment-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">H</div>
+                        <div class="post-username">helpful_user</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">とても勉強になります</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="comment-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">R</div>
+                        <div class="post-username">regular_user</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">いつもありがとうございます</span>
+                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- いいね一覧 -->
+        <main id="likes" class="tab-content">
+            <div class="posts">
+                <div class="liked-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">P</div>
+                        <div class="post-username">popular_user</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">美しい夕日の写真をシェアします</span>
+                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="liked-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">N</div>
+                        <div class="post-username">nature_lover</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">今日の散歩で見つけた可愛い花</span>
+                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="liked-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">F</div>
+                        <div class="post-username">foodie_account</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">手作りケーキが完成しました！</span>
+                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="liked-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">T</div>
+                        <div class="post-username">travel_diary</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">京都旅行の思い出</span>
+                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="liked-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">M</div>
+                        <div class="post-username">music_lover</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">新しいアルバムが最高です</span>
+                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="liked-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">A</div>
+                        <div class="post-username">art_creator</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">新作イラストを描きました</span>
+                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="liked-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">B</div>
+                        <div class="post-username">book_reviewer</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">おすすめの本を紹介します</span>
+                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+                <div class="liked-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">F</div>
+                        <div class="post-username">fitness_coach</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">今日のワークアウト完了！</span>
+                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // すべてのタブコンテンツを非表示にする
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // すべてのタブボタンを非アクティブにする
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 選択されたタブコンテンツを表示する
+            document.getElementById(tabName).classList.add('active');
+
+            // 選択されたタブボタンをアクティブにする
+            event.target.classList.add('active');
+        }
+
+        function toggleHeart(button) {
+            // ハートボタンの状態を切り替える
+            if (button.classList.contains('liked')) {
+                // 「いいね」状態を解除（元に戻す）
+                button.classList.remove('liked');
+                button.textContent = '♡'; // デフォルト表示（白抜き）
+            } else {
+                // 「いいね」状態にする
+                button.classList.add('liked');
+                button.textContent = '🩷'; // ピンクハート
+            }
+        }
+    </script>
 </body>
 </html>
