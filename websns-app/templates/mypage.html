@@ -7,6 +7,8 @@
     <title>マイページ</title>
 </head>
 <body>
+
+  
     <div class="container">
         <!-- ヘッダー部分 -->
         <header class="header">
@@ -322,5 +324,13 @@
             }
         }
     </script>
+  <h1>mypage</h1>
+  <ul>
+    {% for follow, follower in follow %}
+      <li><strong>{{ follow }}</strong>: {{ follower }}</li>
+    {% endfor %}
+  </ul>
+
 </body>
 </html>
+

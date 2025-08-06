@@ -1,8 +1,17 @@
 SELECT * FROM messages
 SELECT * FROM users
+
+
+
+
 SELECT * FROM post
 RENAME TABLE messages TO Posts
 SELECT * FROM Posts
 ALTER TABLE Posts ADD COLUMN username VARCHAR(50);
 SHOW TABLES
+
+
+SELECT DATABASE();
+
 SELECT * FROM Posts
+

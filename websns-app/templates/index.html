@@ -1,28 +1,516 @@
 <!DOCTYPE html>
-<html>
-<head><title>ホームページ</title></head>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nemui</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e1e8ed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn-primary {
+            background-color: #ff7b7b;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .btn-primary:hover {
+            background-color: #ff6b6b;
+        }
+
+        .page-title {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .posts-container {
+            padding: 0;
+        }
+
+        .post-item {
+            display: flex;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e1e8ed;
+            transition: background-color 0.2s ease;
+        }
+
+        .post-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin-right: 15px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .post-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .username {
+            font-weight: 600;
+            color: #333;
+            margin-right: 10px;
+        }
+
+        .post-text {
+            color: #333;
+            font-size: 15px;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.2s ease;
+            font-size: 16px;
+        }
+
+        .action-btn:hover {
+            color: #333;
+        }
+
+        .like-btn.liked {
+            color: #e91e63;
+        }
+
+        .follow-btn {
+            background-color: #1da1f2;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .follow-btn:hover {
+            background-color: #1991db;
+        }
+
+        .follow-btn.following {
+            background-color: #657786;
+        }
+
+        .comment-form {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+        }
+
+        .comment-form textarea:focus {
+            outline: none;
+            border-color: #1da1f2;
+        }
+
+        .comment-form button {
+            margin-top: 8px;
+            background-color: #1da1f2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .comment-form button:hover {
+            background-color: #1991db;
+        }
+
+        .comment-form button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .comments {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .comments h3 {
+            font-size: 14px;
+            color: #657786;
+            margin-bottom: 8px;
+        }
+
+        .comment-item {
+            padding: 8px 0;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+
+        .comment-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-username {
+            font-weight: 600;
+            color: #333;
+            margin-right: 8px;
+        }
+
+        .comment-text {
+            color: #333;
+        }
+
+        .comments-list {
+            display: none;
+        }
+
+        .comments-list.show {
+            display: block;
+        }
+
+        .hashtag {
+            color: #1da1f2;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 0;
+            }
+            
+            .post-item {
+                padding: 12px 15px;
+            }
+            
+            .avatar {
+                width: 40px;
+                height: 40px;
+                margin-right: 12px;
+            }
+        }
+    </style>
+</head>
 <body>
-  <!-- セッションの確認; -->
-  <!-- {% if session.get('user_id') %}
-    <p>ログイン中のユーザーID: {{ session['user_id'] }}</p>
-  {% else %}
-    <p>ログインしていません。</p>
-  {% endif %} -->
-  <form method="postpagebtn" action="/post">
-  <input type="submit" value="投稿する",name = "postpagebtn", onclick="location.href='/post'">
-  </form>
-  <form method="mypagebtn" action="/mypage">
-    <input type="submit",value="マイページ",name = "mypagebtn">
-  </form>
-  <h1>メッセージ一覧</h1>
-  <!-- <form action="/post" method="post">
-    <input type="text" name="content">
-    <input type="submit" value="投稿">
-  </form> -->
-  <ul>
-    {% for post in posts %}
-      <li>{{ post[1] }}</li>
-    {% endfor %}
-  </ul>
+    <div class="container">
+        <header>
+            <div class="logo">nemui</div>
+            <div class="header-buttons">
+                <form method="GET" action="/mypage" style="display:inline;">
+                    <input type="submit" value="マイページ" class="btn btn-secondary">
+                </form>
+                <form method="GET" action="/post" style="display:inline;">
+                    <button type="submit" class="btn btn-primary">+</button>
+                </form>
+            </div>
+        </header>
+        <div class="page-title">投稿一覧</div>
+        <ul>
+          {% for post in posts %}
+            <li>
+              <div class="posts-container">
+                <div class="post-item">
+                  <div class="avatar">{{ post[0][:2] }}</div> 
+                  <div class="post-content">
+                    <div class="post-header">
+                      <span class="username">{{ post[0] }}</span> 
+                    </div>
+        
+                    <div class="post-text">{{ post[1] }}</div>  
+        
+                    <div class="post-actions">
+                    
+                      <button class="action-btn" onclick="toggleCommentForm('{{ post[2] }}')">💬</button>
+        
+                     
+                      <form method="POST" action="/like" style="display:inline;">
+                        <input type="hidden" name="post_id" value="{{ post[2] }}">
+                        <button type="submit" class="like-button" aria-label="いいね">
+                          {% if post[2] in like_post_ids %}
+                            <span style="color:red;">❤️</span>
+                          {% else %}
+                            <span style="color:gray;">🤍</span>
+                          {% endif %}
+                        </button>
+                      </form>
+        
+                  
+                      {% if post[3] != session['user_id'] %}
+                      <form method="POST" action="/follow" style="display:inline;">
+                        <input type="hidden" name="followed_user_id" value="{{ post[3] }}">
+                        {% if post[3] in followed_user_ids %}
+                          <button type="submit" class="follow-button">フォロー中</button>
+                        {% else %}
+                          <button type="submit" class="follow-button">フォローする</button>
+                        {% endif %}
+                      </form>
+                      {% endif %}
+                    </div>
+        
+                
+                    <div id="comment-form-{{ post[2] }}" class="comment-form" style="display:none;">
+                      <form method="POST" action="/comment/{{ post[2] }}">
+                        <textarea name="content" rows="2" cols="50" placeholder="コメントを入力してください" required></textarea>
+                        <br>
+                        <button type="submit">送信</button>
+                      </form>
+                    </div>
+        
+                   
+                    <div class="comments">
+                      <h3>コメント一覧:</h3>
+                      <ul>
+                        {% for comment in comments_by_post[post[2]] %}
+                          <li><strong>{{ comment.username }}</strong>: {{ comment.content }}</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+        
+
+    <script>
+      
+        const currentUser = "あなた";
+
+        function toggleCommentForm(postId) {
+            const form = document.getElementById(`comment-form-${postId}`);
+            const commentsList = document.getElementById(`comments-list-${postId}`);
+            
+            if (form.style.display === "none" || form.style.display === "") {
+                form.style.display = "block";
+         
+                const commentsContainer = commentsList.querySelector('.comments-container');
+                if (commentsContainer.children.length > 0) {
+                    commentsList.classList.add('show');
+                }
+            } else {
+                form.style.display = "none";
+            }
+        }
+
+        function addComment(event, postId) {
+            event.preventDefault();
+            console.log('コメント送信開始:', postId);
+            
+            const form = event.target;
+            const textarea = form.querySelector('textarea');
+            const commentText = textarea.value.trim();
+            
+            console.log('コメントテキスト:', commentText);
+            
+            if (commentText === '') {
+                alert('コメントを入力してください');
+                return;
+            }
+            
+    
+            const commentsList = document.getElementById(`comments-list-${postId}`);
+            const commentsContainer = commentsList.querySelector('.comments-container');
+            
+            const commentElement = document.createElement('div');
+            commentElement.className = 'comment-item';
+            commentElement.innerHTML = `
+                <div class="comment-avatar">あ</div>
+                <div class="comment-content">
+                    <span class="comment-username">${currentUser}</span>
+                    <span class="comment-text">${commentText}</span>
+                </div>
+            `;
+            
+            commentsContainer.appendChild(commentElement);
+            
+
+            commentsList.classList.add('show');
+      
+            textarea.value = '';
+            
+
+            const commentForm = document.getElementById(`comment-form-${postId}`);
+            commentForm.style.display = "none";
+            
+            console.log('コメント追加完了');
+        }
+
+       
+        document.addEventListener('DOMContentLoaded', function() {
+            const textareas = document.querySelectorAll('.comment-form textarea');
+            textareas.forEach(textarea => {
+                const button = textarea.nextElementSibling;
+                
+                textarea.addEventListener('input', function() {
+                    if (this.value.trim() === '') {
+                        button.disabled = true;
+                    } else {
+                        button.disabled = false;
+                    }
+                });
+                
+          
+                button.disabled = true;
+            });
+        });
+
+
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.classList.contains('liked')) {
+                    this.classList.remove('liked');
+                    this.innerHTML = '🤍';
+                } else {
+                    this.classList.add('liked');
+                    this.innerHTML = '❤️';
+                }
+            });
+        });
+
+     
+        document.querySelectorAll('.follow-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.classList.contains('following')) {
+                    this.classList.remove('following');
+                    this.textContent = 'フォロー';
+                    this.style.backgroundColor = '#1da1f2';
+                } else {
+                    this.classList.add('following');
+                    this.textContent = 'フォロー中';
+                    this.style.backgroundColor = '#657786';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
