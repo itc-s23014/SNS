@@ -223,9 +223,26 @@ def mypage():
     SELECT id, content, username FROM Posts WHERE user_id = %s
 ''', (user_id,))
     my_posts = cursor.fetchall()
-    postid = my_posts[0][0] if my_posts else None
-    cursor.execute('''SELECT content, sender_id, post_id FROM messages WHERE post_id = %s''', (postid,))
-    my_comment = cursor.fetchall()
+
+
+    posts_with_posts = []
+    for post in my_posts:
+        post_id, content, username = post
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+        SELECT messages.content, users.username
+        FROM messages
+        JOIN users ON messages.sender_id = users.id
+        WHERE messages.post_id = %s
+    ''', (post_id,))
+        comments = cursor.fetchall()
+        posts_with_posts.append({
+        'id': post_id,
+        'content': content,
+        'username': username,
+        'comments': comments
+    })
     cursor.close()
     conn.close()
 
@@ -235,8 +252,9 @@ def mypage():
     liked_posts=liked_posts,
     my_comments=my_comments,
     my_posts=my_posts,
-    my_comment=my_comment,
-    username=username
+    my_comment=my_comments,
+    username=username,
+    posts_with_posts=posts_with_posts
 )
         
 @app.route('/post', methods=['GET'])
