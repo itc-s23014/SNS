@@ -1,4 +1,19 @@
-  <form action="/post" method="post">
-    <input type="text" name="content">
-    <input type="submit" value="投稿">
-  </form>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../static/post.css">
+  <title>post</title>
+</head>
+  <body>
+    <div class="post-container">
+      <h1>Post</h1>
+      <form action="/post" method="post">
+        <textarea class="Form-Item-Textarea" name="content"></textarea>
+        <div class="form-footer">
+          <button type="submit">投稿する</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
