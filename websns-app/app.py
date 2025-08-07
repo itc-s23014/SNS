@@ -217,16 +217,22 @@ def mypage():
         WHERE Likes.user_id = %s
     ''', (user_id,))
     liked_posts = cursor.fetchall()
-    print("liked_posts:", liked_posts)  # デバッグ用
+    print("liked_posts:", liked_posts)  
 
-    # 自分のコメント
     cursor.execute('''
-        SELECT messages.id, messages.content, messages.post_id
-        FROM messages
-        WHERE messages.sender_id = %s
-    ''', (user_id,))
+    SELECT 
+        messages.id,              
+        messages.content,           
+        messages.post_id,           
+        Posts.content,              
+        users.username              
+    FROM messages
+    JOIN Posts ON messages.post_id = Posts.id
+    JOIN users ON Posts.user_id = users.id
+    WHERE messages.sender_id = %s
+''', (user_id,))
     my_comments = cursor.fetchall()
-    print("my_comments:", my_comments)  # デバッグ用
+    print("my_comments:", my_comments)  
 
     # 自分の過去の投稿
     cursor.execute('''

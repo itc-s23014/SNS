@@ -73,26 +73,31 @@
         </main>
 
         <!-- コメント一覧 -->
-        <main id="comments" class="tab-content">
-            <div class="posts">
-                {% if my_comments %}
-                    {% for comment in my_comments %}
-                    <div class="comment-item">
-                        <div class="post-user-info">
-                            <div class="post-avatar">{{ comment[0] }}</div>
-                            <div class="post-username">コメントID: {{ comment[0] }}</div>
-                        </div>
-                        <div class="post-content">
-                            <span class="post-text">{{ comment[1] }}</span>
-                            <span class="post-text">（投稿ID: {{ comment[2] }}）</span>
-                        </div>
+        
+<main id="comments" class="tab-content">
+    <div class="posts">
+        {% if my_comments %}
+            {% for comment in my_comments %}
+            <div class="comment-item">
+                <div class="post-user-info">
+                    <div class="post-avatar">{{ comment[0] }}</div>
+                </div>
+                <div class="post-content">
+                    <span class="post-text">{{ comment[1] }}</span>
+                    <div class="comment-meta" style="font-size: 0.95em; color: #666; margin-top: 3px;">
+                       
+                        投稿: 
+                        「{{ comment[3] }}」
+                        <span style="margin-left:8px;">by {{ comment[4] }}</span>
                     </div>
-                    {% endfor %}
-                {% else %}
-                    <p>まだコメントはありません。</p>
-                {% endif %}
+                </div>
             </div>
-        </main>
+            {% endfor %}
+        {% else %}
+            <p>まだコメントはありません。</p>
+        {% endif %}
+    </div>
+</main>
 
         <!-- いいね一覧 -->
         <main id="likes" class="tab-content">
@@ -106,7 +111,6 @@
                         </div>
                         <div class="post-content">
                             <span class="post-text">{{ post[1] }}</span>
-                            <span class="post-text">（投稿ID: {{ post[0] }}）</span>
                         </div>
                     </div>
                     {% endfor %}
