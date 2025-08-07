@@ -215,16 +215,25 @@ def mypage():
     my_comments = cursor.fetchall()
     print("my_comments:", my_comments)  # デバッグ用
 
-
+    # 自分の過去の投稿
+    cursor.execute('''
+    SELECT id, content, username FROM Posts WHERE user_id = %s
+''', (user_id,))
+    my_posts = cursor.fetchall()
+    postid = my_posts[0][0] if my_posts else None
+    cursor.execute('''SELECT content, sender_id, post_id FROM messages WHERE post_id = %s''', (postid,))
+    my_comment = cursor.fetchall()
     cursor.close()
     conn.close()
 
     return render_template(
-        'mypage.html',
-        follow=follow_data,
-        liked_posts=liked_posts,
-        my_comments=my_comments
-    )
+    'mypage.html',
+    follow=follow_data,
+    liked_posts=liked_posts,
+    my_comments=my_comments,
+    my_posts=my_posts,
+    my_comment=my_comment
+)
         
 @app.route('/post', methods=['GET'])
 def post_form():

@@ -39,7 +39,13 @@
         <!-- 投稿一覧（ここは自分の投稿を表示したい場合に拡張）-->
         <main id="posts" class="tab-content active">
             <div class="posts">
-                <p>ここに自分の投稿一覧を表示できます（必要なら拡張）</p>
+            {% for post in my_posts %}
+  <div>
+    <span>{{ post[0] }}</span> <!-- 投稿ID -->
+    <span>{{ post[2] }}</span> <!-- ユーザー名 -->
+    <span>: {{ post[1] }}</span> <!-- 内容 -->
+  </div>
+{% endfor %}
             </div>
         </main>
 
