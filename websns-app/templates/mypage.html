@@ -7,14 +7,11 @@
     <title>マイページ</title>
 </head>
 <body>
-
-  
     <div class="container">
         <!-- ヘッダー部分 -->
         <header class="header">
             <div class="header-nav">
                 <button class="back-btn" onclick="location.href='./'">⬅ 戻る</button>
-                <!-- <button class="edit-btn">編集</button> -->
             </div>
             <div class="user-info">
                 <div class="avatar">
@@ -22,14 +19,12 @@
                 </div>
                 <span class="username">tarou</span>
                 <div class="follow-stats">
+                    {% for label, count in follow %}
                     <div class="follow-item">
-                        <span class="stat-number">0</span>
-                        <span class="stat-label">フォロー</span>
+                        <span class="stat-number">{{ count }}</span>
+                        <span class="stat-label">{{ label }}</span>
                     </div>
-                    <div class="follow-item">
-                        <span class="stat-number">0</span>
-                        <span class="stat-label">フォロワー</span>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </header>
@@ -41,296 +36,77 @@
             <button class="tab" onclick="showTab('likes')">いいね</button>
         </nav>
 
-        <!-- 投稿一覧 -->
+        <!-- 投稿一覧（ここは自分の投稿を表示したい場合に拡張）-->
         <main id="posts" class="tab-content active">
             <div class="posts">
-                <div class="post-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">T</div>
-                        <div class="post-username">tarou</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">あああああああ</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="post-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">T</div>
-                        <div class="post-username">tarou</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">こんにちは</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="post-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">T</div>
-                        <div class="post-username">tarou</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">今日は良い天気ですね</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="post-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">T</div>
-                        <div class="post-username">tarou</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">お疲れ様でした</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="post-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">T</div>
-                        <div class="post-username">tarou</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">美味しいランチを食べました</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="post-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">T</div>
-                        <div class="post-username">tarou</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">新しいプロジェクトが始まります</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="post-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">T</div>
-                        <div class="post-username">tarou</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">読書の時間が好きです</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="post-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">T</div>
-                        <div class="post-username">tarou</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">週末の予定を立てています</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
+            {% for post in my_posts %}
+  <div>
+    <span>{{ post[0] }}</span> <!-- 投稿ID -->
+    <span>{{ post[2] }}</span> <!-- ユーザー名 -->
+    <span>: {{ post[1] }}</span> <!-- 内容 -->
+  </div>
+{% endfor %}
             </div>
         </main>
 
         <!-- コメント一覧 -->
         <main id="comments" class="tab-content">
             <div class="posts">
-                <div class="comment-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">U</div>
-                        <div class="post-username">user123</div>
+                {% if my_comments %}
+                    {% for comment in my_comments %}
+                    <div class="comment-item">
+                        <div class="post-user-info">
+                            <div class="post-avatar">{{ comment[0] }}</div>
+                            <div class="post-username">コメントID: {{ comment[0] }}</div>
+                        </div>
+                        <div class="post-content">
+                            <span class="post-text">{{ comment[1] }}</span>
+                            <span class="post-text">（投稿ID: {{ comment[2] }}）</span>
+                        </div>
                     </div>
-                    <div class="post-content">
-                        <span class="post-text">素晴らしい投稿ですね！</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="comment-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">F</div>
-                        <div class="post-username">friend456</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">同感です。ありがとうございます。</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="comment-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">F</div>
-                        <div class="post-username">follower789</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">いつも楽しく拝見しています</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="comment-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">C</div>
-                        <div class="post-username">comment_user</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">参考になりました</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="comment-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">A</div>
-                        <div class="post-username">active_user</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">また見に来ます！</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="comment-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">H</div>
-                        <div class="post-username">helpful_user</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">とても勉強になります</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="comment-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">R</div>
-                        <div class="post-username">regular_user</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">いつもありがとうございます</span>
-                        <button class="heart-btn" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
+                    {% endfor %}
+                {% else %}
+                    <p>まだコメントはありません。</p>
+                {% endif %}
             </div>
         </main>
 
         <!-- いいね一覧 -->
         <main id="likes" class="tab-content">
             <div class="posts">
-                <div class="liked-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">P</div>
-                        <div class="post-username">popular_user</div>
+                {% if liked_posts %}
+                    {% for post in liked_posts %}
+                    <div class="liked-item">
+                        <div class="post-user-info">
+                            <div class="post-avatar">{{ post[2][0]|upper }}</div>
+                            <div class="post-username">{{ post[2] }}</div>
+                        </div>
+                        <div class="post-content">
+                            <span class="post-text">{{ post[1] }}</span>
+                            <span class="post-text">（投稿ID: {{ post[0] }}）</span>
+                        </div>
                     </div>
-                    <div class="post-content">
-                        <span class="post-text">美しい夕日の写真をシェアします</span>
-                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="liked-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">N</div>
-                        <div class="post-username">nature_lover</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">今日の散歩で見つけた可愛い花</span>
-                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="liked-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">F</div>
-                        <div class="post-username">foodie_account</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">手作りケーキが完成しました！</span>
-                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="liked-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">T</div>
-                        <div class="post-username">travel_diary</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">京都旅行の思い出</span>
-                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="liked-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">M</div>
-                        <div class="post-username">music_lover</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">新しいアルバムが最高です</span>
-                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="liked-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">A</div>
-                        <div class="post-username">art_creator</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">新作イラストを描きました</span>
-                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="liked-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">B</div>
-                        <div class="post-username">book_reviewer</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">おすすめの本を紹介します</span>
-                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
-                <div class="liked-item">
-                    <div class="post-user-info">
-                        <div class="post-avatar">F</div>
-                        <div class="post-username">fitness_coach</div>
-                    </div>
-                    <div class="post-content">
-                        <span class="post-text">今日のワークアウト完了！</span>
-                        <button class="heart-btn liked" onclick="toggleHeart(this)">♡</button>
-                    </div>
-                </div>
+                    {% endfor %}
+                {% else %}
+                    <p>まだいいねした投稿はありません。</p>
+                {% endif %}
             </div>
         </main>
     </div>
 
     <script>
         function showTab(tabName) {
-            // すべてのタブコンテンツを非表示にする
             const tabContents = document.querySelectorAll('.tab-content');
             tabContents.forEach(content => {
                 content.classList.remove('active');
             });
-
-            // すべてのタブボタンを非アクティブにする
             const tabs = document.querySelectorAll('.tab');
             tabs.forEach(tab => {
                 tab.classList.remove('active');
             });
-
-            // 選択されたタブコンテンツを表示する
             document.getElementById(tabName).classList.add('active');
-
-            // 選択されたタブボタンをアクティブにする
             event.target.classList.add('active');
         }
-
-        function toggleHeart(button) {
-            // ハートボタンの状態を切り替える
-            if (button.classList.contains('liked')) {
-                // 「いいね」状態を解除（元に戻す）
-                button.classList.remove('liked');
-                button.textContent = '♡'; // デフォルト表示（白抜き）
-            } else {
-                // 「いいね」状態にする
-                button.classList.add('liked');
-                button.textContent = '🩷'; // ピンクハート
-            }
-        }
     </script>
-  <h1>mypage</h1>
-  <ul>
-    {% for follow, follower in follow %}
-      <li><strong>{{ follow }}</strong>: {{ follower }}</li>
-    {% endfor %}
-  </ul>
-
 </body>
 </html>
-

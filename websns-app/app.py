@@ -187,19 +187,54 @@ def mypage():
     user_id = session['user_id']
     conn = get_connection()
     cursor = conn.cursor()
+
+    # フォロー・フォロワー数
     cursor.execute('SELECT follow_count, follower_count FROM users WHERE id = %s', (user_id,))
     result = cursor.fetchone()
-    cursor.close()
-    conn.close()
-
     if result is None:
         follow_data = [("フォロー", 0), ("フォロワー", 0)]
     else:
         follow_data = [("フォロー", result[0]), ("フォロワー", result[1])]
 
-    return render_template('mypage.html', follow=follow_data)
+    # いいねした投稿
+    cursor.execute('''
+        SELECT Posts.id, Posts.content, Posts.username
+        FROM Likes
+        JOIN Posts ON Likes.post_id = Posts.id
+        WHERE Likes.user_id = %s
+    ''', (user_id,))
+    liked_posts = cursor.fetchall()
+    print("liked_posts:", liked_posts)  # デバッグ用
 
+    # 自分のコメント
+    cursor.execute('''
+        SELECT messages.id, messages.content, messages.post_id
+        FROM messages
+        WHERE messages.sender_id = %s
+    ''', (user_id,))
+    my_comments = cursor.fetchall()
+    print("my_comments:", my_comments)  # デバッグ用
 
+    # 自分の過去の投稿
+    cursor.execute('''
+    SELECT id, content, username FROM Posts WHERE user_id = %s
+''', (user_id,))
+    my_posts = cursor.fetchall()
+    postid = my_posts[0][0] if my_posts else None
+    cursor.execute('''SELECT content, sender_id, post_id FROM messages WHERE post_id = %s''', (postid,))
+    my_comment = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return render_template(
+    'mypage.html',
+    follow=follow_data,
+    liked_posts=liked_posts,
+    my_comments=my_comments,
+    my_posts=my_posts,
+    my_comment=my_comment
+)
+        
 @app.route('/post', methods=['GET'])
 def post_form():
     return render_template('post.html')
