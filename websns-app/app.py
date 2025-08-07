@@ -188,6 +188,9 @@ def mypage():
     conn = get_connection()
     cursor = conn.cursor()
 
+    cursor.execute('SELECT username FROM users WHERE id = %s', (user_id,))
+    username = cursor.fetchone()[0]
+
     # フォロー・フォロワー数
     cursor.execute('SELECT follow_count, follower_count FROM users WHERE id = %s', (user_id,))
     result = cursor.fetchone()
@@ -232,7 +235,8 @@ def mypage():
     liked_posts=liked_posts,
     my_comments=my_comments,
     my_posts=my_posts,
-    my_comment=my_comment
+    my_comment=my_comment,
+    username=username
 )
         
 @app.route('/post', methods=['GET'])

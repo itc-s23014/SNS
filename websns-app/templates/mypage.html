@@ -12,12 +12,15 @@
         <header class="header">
             <div class="header-nav">
                 <button class="back-btn" onclick="location.href='./'">⬅ 戻る</button>
+
+                <button class="edit-btn">編集</button>
+
             </div>
             <div class="user-info">
                 <div class="avatar">
                     <span>T</span>
                 </div>
-                <span class="username">tarou</span>
+                <span class="username">{{ username }}</span>
                 <div class="follow-stats">
                     {% for label, count in follow %}
                     <div class="follow-item">
