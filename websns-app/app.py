@@ -1,9 +1,19 @@
 from flask import Flask, render_template, request, redirect, flash, session
+from werkzeug.utils import secure_filename
+
 import mysql.connector
 import os
 from dotenv import load_dotenv
 app = Flask(__name__)
 app.secret_key = 'secret_key'
+
+
+UPLOAD_FOLDER = 'static/profile_images'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 load_dotenv()
 def get_connection():
@@ -223,9 +233,26 @@ def mypage():
     SELECT id, content, username FROM Posts WHERE user_id = %s
 ''', (user_id,))
     my_posts = cursor.fetchall()
-    postid = my_posts[0][0] if my_posts else None
-    cursor.execute('''SELECT content, sender_id, post_id FROM messages WHERE post_id = %s''', (postid,))
-    my_comment = cursor.fetchall()
+
+
+    posts_with_posts = []
+    for post in my_posts:
+        post_id, content, username = post
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+        SELECT messages.content, users.username
+        FROM messages
+        JOIN users ON messages.sender_id = users.id
+        WHERE messages.post_id = %s
+    ''', (post_id,))
+        comments = cursor.fetchall()
+        posts_with_posts.append({
+        'id': post_id,
+        'content': content,
+        'username': username,
+        'comments': comments
+    })
     cursor.close()
     conn.close()
 
@@ -235,8 +262,9 @@ def mypage():
     liked_posts=liked_posts,
     my_comments=my_comments,
     my_posts=my_posts,
-    my_comment=my_comment,
-    username=username
+    my_comment=my_comments,
+    username=username,
+    posts_with_posts=posts_with_posts
 )
         
 @app.route('/post', methods=['GET'])
@@ -265,20 +293,40 @@ def login_post():
         cursor.close()
         conn.close()
         return redirect('/login')
+    
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        profile_image = request.files.get('profile_image')
+
+        print("profile_image:",profile_image)
+        print("profile",profile_image.filename if profile_image else "No file uploaded")
         if not username or not password:
             return 'Username and password are required', 400
+
+        profile_image_path = None
+        if profile_image and allowed_file(profile_image.filename):
+            filename = secure_filename(profile_image.filename)
+            profile_image_path = f"{username}_{filename}"
+            profile_image.save(os.path.join(app.config['UPLOAD_FOLDER'], profile_image_path))
+
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO users (username, password) VALUES (%s, %s)', (username, password))
+        cursor.execute(
+            'INSERT INTO users (username, password, profile_image_path) VALUES (%s, %s, %s)',
+            (username, password, profile_image_path)
+        )
         conn.commit()
         cursor.close()
         conn.close()
+
         return redirect('/login')
+
     return render_template('register.html')
 
 

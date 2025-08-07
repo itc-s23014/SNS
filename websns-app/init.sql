@@ -11,8 +11,10 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     follow_count INT DEFAULT 0,
-    follower_count INT DEFAULT 0
+    follower_count INT DEFAULT 0,
+    profile_image_path VARCHAR(255) DEFAULT 'default.jpg'
 );
+
 
 
 CREATE TABLE IF NOT EXISTS Posts (
@@ -51,3 +53,5 @@ CREATE TABLE IF NOT EXISTS Follows (
     FOREIGN KEY (followed_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY unique_follow (follower_id, followed_id)
 );
+
+

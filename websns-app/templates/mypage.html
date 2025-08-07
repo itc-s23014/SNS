@@ -39,16 +39,36 @@
             <button class="tab" onclick="showTab('likes')">いいね</button>
         </nav>
 
-        <!-- 投稿一覧（ここは自分の投稿を表示したい場合に拡張）-->
         <main id="posts" class="tab-content active">
             <div class="posts">
-            {% for post in my_posts %}
-  <div>
-    <span>{{ post[0] }}</span> <!-- 投稿ID -->
-    <span>{{ post[2] }}</span> <!-- ユーザー名 -->
-    <span>: {{ post[1] }}</span> <!-- 内容 -->
-  </div>
-{% endfor %}
+                {% if posts_with_posts %}
+                    {% for post in posts_with_posts %}
+                        <div class="post-block">
+                            <div class="post-user-info">
+                                <div class="post-avatar">{{ post.username[:1] }}</div>
+                                <div class="post-username">{{ post.username }}</div>
+                            </div>
+                            <div class="post-content">
+                                <span class="post-text">{{ post.content }}</span>
+                            </div>
+                            {% if post.comments %}
+                                <div class="post-username">コメント一覧</div>
+                                <ul class="comment-list">
+                                    {% for comment in post.comments %}
+                                        <li class="comment-item">
+                                            <span class="comment-text">{{ comment[0] }}</span>
+                                            <span class="comment-author">（by: {{ comment[1] }}）</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <div class="no-comments">コメントはありません</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>まだ投稿はありません。</p>
+                {% endif %}
             </div>
         </main>
 
