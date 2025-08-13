@@ -18,9 +18,15 @@
             </div>
             <div class="user-info">
                 <div class="avatar">
-                    <span>T</span>
+                    <span>{{ username[0] }}</span>
                 </div>
-                <span class="username">{{ username }}</span>
+                <span class="username" id="username-display">{{ username }}</span>
+                <!-- 編集フォーム（最初は非表示） -->
+                <form id="edit-username-form" action="/edit_username" method="POST" style="display:none;">
+                    <input type="text" name="new_username" value="{{ username }}" required>
+                    <button type="submit">保存</button>
+                    <button type="button" onclick="cancelEdit()">キャンセル</button>
+                </form>
                 <div class="follow-stats">
                     {% for label, count in follow %}
                     <div class="follow-item">
@@ -30,6 +36,17 @@
                     {% endfor %}
                 </div>
             </div>
+            
+            <script>
+                document.querySelector('.edit-btn').onclick = function() {
+                    document.getElementById('username-display').style.display = 'none';
+                    document.getElementById('edit-username-form').style.display = 'inline';
+                };
+                function cancelEdit() {
+                    document.getElementById('edit-username-form').style.display = 'none';
+                    document.getElementById('username-display').style.display = 'inline';
+                }
+            </script>
         </header>
 
         <!-- タブメニュー -->

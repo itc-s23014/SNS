@@ -272,6 +272,22 @@ def mypage():
     username=username,
     posts_with_posts=posts_with_posts
 )
+
+@app.route('/edit_username', methods=['POST'])
+def edit_username():
+    if 'user_id' not in session:
+        return redirect('/login')
+    new_username = request.form['new_username']
+    user_id = session['user_id']
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('UPDATE users SET username = %s WHERE id = %s', (new_username, user_id))
+    cursor.execute('UPDATE Posts SET username = %s WHERE user_id = %s', (new_username, user_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    flash("ユーザーネームを変更しました", "success")
+    return redirect('/mypage')
         
 @app.route('/post', methods=['GET'])
 def post_form():
