@@ -12,6 +12,9 @@
         <header class="header">
             <div class="header-nav">
                 <button class="back-btn" onclick="location.href='./'">⬅ 戻る</button>
+
+                <button class="edit-btn">編集</button>
+
             </div>
             <div class="user-info">
                 <div class="avatar">
@@ -36,40 +39,53 @@
             <button class="tab" onclick="showTab('likes')">いいね</button>
         </nav>
 
-        <!-- 投稿一覧（ここは自分の投稿を表示したい場合に拡張）-->
-        <main id="posts" class="tab-content active">
-            <div class="posts">
+      <!-- 投稿タブ -->
+<main id="posts" class="tab-content active">
+    <div class="posts">
+        {% if my_posts %}
             {% for post in my_posts %}
-  <div>
-    <span>{{ post[0] }}</span> <!-- 投稿ID -->
-    <span>{{ post[2] }}</span> <!-- ユーザー名 -->
-    <span>: {{ post[1] }}</span> <!-- 内容 -->
-  </div>
-{% endfor %}
-            </div>
-        </main>
-
-        <!-- コメント一覧 -->
-        <main id="comments" class="tab-content">
-            <div class="posts">
-                {% if my_comments %}
-                    {% for comment in my_comments %}
-                    <div class="comment-item">
-                        <div class="post-user-info">
-                            <div class="post-avatar">{{ comment[0] }}</div>
-                            <div class="post-username">コメントID: {{ comment[0] }}</div>
-                        </div>
-                        <div class="post-content">
-                            <span class="post-text">{{ comment[1] }}</span>
-                            <span class="post-text">（投稿ID: {{ comment[2] }}）</span>
-                        </div>
+                <div class="post-block">
+                    <div class="post-user-info">
+                        <div class="post-avatar">{{ post[2][:1] }}</div>
+                        <div class="post-username">{{ post[2] }}</div>
                     </div>
-                    {% endfor %}
-                {% else %}
-                    <p>まだコメントはありません。</p>
-                {% endif %}
+                    <div class="post-content">
+                        <span class="post-text">{{ post[1] }}</span>
+                        <span class="post-id">（投稿ID: {{ post[0] }}）</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>まだ投稿はありません。</p>
+        {% endif %}
+    </div>
+</main>
+        <!-- コメント一覧 -->
+        
+<main id="comments" class="tab-content">
+    <div class="posts">
+        {% if my_comments %}
+            {% for comment in my_comments %}
+            <div class="comment-item">
+                <div class="post-user-info">
+                    <div class="post-avatar">{{ comment[0] }}</div>
+                </div>
+                <div class="post-content">
+                    <span class="post-text">{{ comment[1] }}</span>
+                    <div class="comment-meta" style="font-size: 0.95em; color: #666; margin-top: 3px;">
+                       
+                        投稿: 
+                        「{{ comment[3] }}」
+                        <span style="margin-left:8px;">by {{ comment[4] }}</span>
+                    </div>
+                </div>
             </div>
-        </main>
+            {% endfor %}
+        {% else %}
+            <p>まだコメントはありません。</p>
+        {% endif %}
+    </div>
+</main>
 
         <!-- いいね一覧 -->
         <main id="likes" class="tab-content">
@@ -83,7 +99,6 @@
                         </div>
                         <div class="post-content">
                             <span class="post-text">{{ post[1] }}</span>
-                            <span class="post-text">（投稿ID: {{ post[0] }}）</span>
                         </div>
                     </div>
                     {% endfor %}
