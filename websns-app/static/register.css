@@ -1,52 +1,73 @@
-/* register.css */
-
-/* 全体のフォームコンテナを調整 */
 .login-container {
-    background-color: #ffffff;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 800px;
-  }
-  
-  /* 入力フィールドのフォーカス時のスタイル */
-  input:focus {
-    outline: none;
-    border-color: #3b82f6; /* Tailwindのblue-500 */
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
-  }
-  
-  /* ラベルの文字サイズや色の微調整 */
-  label {
-    color: #36465f; /* Tailwindのgray-700 */
-    font-size: 0.95rem;
-  }
-  
-  /* エラー表示用（将来的に使う場合） */
-  .input-error {
-    border-color: #ef4444; /* Tailwindのred-500 */
-    background-color: #fef2f2;
-  }
-  
-  /* 登録ボタン */
-  .submit-button {
-    background-color: #f87171; /* 赤系 */
-    color: white;
-    padding: 0.5rem 1.5rem;
-    border: none;
-    border-radius: 9999px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 1rem;
-  }
-  
-  .submit-button:hover {
-    background-color: #ef4444;
-  }
-  
-  /* リンクのスタイル調整 */
-  a {
-    transition: color 0.2s ease;
-  }
+  font-size: 16px;
+  max-width: 800px;
+  margin: 60px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  width: 80px;
+  text-align: right;
+  margin-right: 30px;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 40%;
+  height: 30px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+}
+
+button[type="submit"] {
+  background-color: #f36d6d;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+  margin-right: 10px;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding: 0 10px;
+}
+
+.form-footer a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.form-footer button {
+  background-color: #f36d6d;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+}
