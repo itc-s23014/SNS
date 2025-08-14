@@ -7,9 +7,9 @@
     <title>マイページ</title>
 </head>
 <body>
-    <div class="container">
+    <!-- <div class="container"> -->
         <!-- ヘッダー部分 -->
-        <header class="header">
+        <!-- <header class="header">
             <div class="header-nav">
                 <button class="back-btn" onclick="location.href='./'">⬅ 戻る</button>
 
@@ -30,10 +30,10 @@
                     {% endfor %}
                 </div>
             </div>
-        </header>
+        </header> -->
 
         <!-- タブメニュー -->
-        <nav class="tab-menu">
+        <!-- <nav class="tab-menu">
             <button class="tab active" onclick="showTab('posts')">投稿</button>
             <button class="tab" onclick="showTab('comments')">コメント</button>
             <button class="tab" onclick="showTab('likes')">いいね</button>
@@ -70,11 +70,11 @@
                     <p>まだ投稿はありません。</p>
                 {% endif %}
             </div>
-        </main>
+        </main> -->
 
         <!-- コメント一覧 -->
         
-<main id="comments" class="tab-content">
+<!-- <main id="comments" class="tab-content">
     <div class="posts">
         {% if my_comments %}
             {% for comment in my_comments %}
@@ -97,10 +97,10 @@
             <p>まだコメントはありません。</p>
         {% endif %}
     </div>
-</main>
+</main> -->
 
         <!-- いいね一覧 -->
-        <main id="likes" class="tab-content">
+        <!-- <main id="likes" class="tab-content">
             <div class="posts">
                 {% if liked_posts %}
                     {% for post in liked_posts %}
@@ -117,6 +117,180 @@
                 {% else %}
                     <p>まだいいねした投稿はありません。</p>
                 {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html> -->
+
+    <div class="container">
+        <!-- ヘッダー部分 -->
+        <header class="header">
+            <div class="header-nav">
+                <button class="back-btn" onclick="location.href='./'">⬅ 戻る</button>
+                <button class="edit-btn">編集</button>
+            </div>
+            <div class="user-info">
+                <div class="avatar">
+                    <span>T</span>
+                </div>
+                <span class="username">テストユーザー</span>
+                <div class="follow-stats">
+                    <div class="follow-item">
+                        <span class="stat-number">42</span>
+                        <span class="stat-label">フォロー</span>
+                    </div>
+                    <div class="follow-item">
+                        <span class="stat-number">108</span>
+                        <span class="stat-label">フォロワー</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- タブメニュー -->
+        <nav class="tab-menu">
+            <button class="tab active" onclick="showTab('posts')">投稿</button>
+            <button class="tab" onclick="showTab('comments')">コメント</button>
+            <button class="tab" onclick="showTab('likes')">いいね</button>
+        </nav>
+
+        <main id="posts" class="tab-content active">
+            <div class="posts">
+                <!-- 投稿例1（コメントあり） -->
+                <div class="post-block">
+                    <div class="post-main">
+                        <div class="post-user-info">
+                            <div class="post-avatar">T</div>
+                            <div class="post-username">テストユーザー</div>
+                        </div>
+                        <div class="post-content">
+                            <span class="post-text">今日は良い天気ですね！散歩に出かけようと思います。</span>
+                        </div>
+                    </div>
+                    <div class="post-comments">
+                        <div class="comments-header">コメント一覧</div>
+                        <ul class="comment-list">
+                            <li class="comment-list-item">
+                                <div class="comment-text">いいですね！私も散歩したくなりました。</div>
+                                <div class="comment-author">by: 山田太郎</div>
+                            </li>
+                            <li class="comment-list-item">
+                                <div class="comment-text">天気が良い日は外に出たくなりますよね。</div>
+                                <div class="comment-author">by: 佐藤花子</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 投稿例2（コメントなし） -->
+                <div class="post-block">
+                    <div class="post-main">
+                        <div class="post-user-info">
+                            <div class="post-avatar">T</div>
+                            <div class="post-username">テストユーザー</div>
+                        </div>
+                        <div class="post-content">
+                            <span class="post-text">新しいカフェを発見しました。コーヒーが美味しかったです☕</span>
+                        </div>
+                    </div>
+                    <div class="post-comments">
+                        <div class="no-comments">コメントはありません</div>
+                    </div>
+                </div>
+
+                <!-- 投稿例3 -->
+                <div class="post-block">
+                    <div class="post-main">
+                        <div class="post-user-info">
+                            <div class="post-avatar">T</div>
+                            <div class="post-username">テストユーザー</div>
+                        </div>
+                        <div class="post-content">
+                            <span class="post-text">読書の時間です📚 今日は技術書を読んでいます。</span>
+                        </div>
+                    </div>
+                    <div class="post-comments">
+                        <div class="comments-header">コメント一覧</div>
+                        <ul class="comment-list">
+                            <li class="comment-list-item">
+                                <div class="comment-text">何の技術書ですか？</div>
+                                <div class="comment-author">by: 田中一郎</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- コメント一覧 -->
+        <main id="comments" class="tab-content">
+            <div class="posts">
+                <div class="comment-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">T</div>
+                    </div>
+                    <div class="comment-content">
+                        <span class="post-text">いいですね！私も散歩したくなりました。</span>
+                        <div class="comment-meta">
+                            投稿: 
+                            「今日は良い天気ですね！散歩に出かけようと思います。」
+                            <span style="margin-left:8px;">by テストユーザー</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="comment-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">T</div>
+                    </div>
+                    <div class="comment-content">
+                        <span class="post-text">何の技術書ですか？</span>
+                        <div class="comment-meta">
+                            投稿: 
+                            「読書の時間です📚 今日は技術書を読んでいます。」
+                            <span style="margin-left:8px;">by テストユーザー</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- いいね一覧 -->
+        <main id="likes" class="tab-content">
+            <div class="posts">
+                <div class="liked-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">Y</div>
+                        <div class="post-username">山田太郎</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">今日は素晴らしい一日でした！</span>
+                    </div>
+                </div>
+                <div class="liked-item">
+                    <div class="post-user-info">
+                        <div class="post-avatar">S</div>
+                        <div class="post-username">佐藤花子</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">新しいプロジェクトが始まります。楽しみです！</span>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
