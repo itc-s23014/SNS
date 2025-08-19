@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request, redirect, flash, session
+from flask import Flask, render_template, request, redirect, flash, session, jsonify # jsonify をインポート
 import mysql.connector
 import os
 from dotenv import load_dotenv
+
 app = Flask(__name__)
 app.secret_key = 'secret_key'
-
 load_dotenv()
+
 def get_connection():
     return mysql.connector.connect(
         host=os.getenv("DB_HOST"),
@@ -57,47 +58,55 @@ def index():
         comments_by_post=comments_by_post,
         followed_user_ids=followed_user_ids 
     )
+
 @app.route('/like', methods=['POST'])
-def like_post():
+def like_post_api():
     if 'user_id' not in session:
-        return redirect('/login')
+        return jsonify({'status': 'error', 'message': 'ログインが必要です'}), 401
 
-    post_id = request.form['post_id']
-    user_id = session['user_id']
-    conn = get_connection()
-    cursor = conn.cursor()
+    try:
+        data = request.get_json()
+        post_id = data.get('post_id')
+        action = data.get('action')
+        user_id = session['user_id']
 
+        if not post_id or not action:
+            return jsonify({'status': 'error', 'message': '不正なリクエストです'}), 400
 
-    cursor.execute('SELECT * FROM Likes WHERE post_id = %s AND user_id = %s', (post_id, user_id))
+        conn = get_connection()
+        cursor = conn.cursor()
 
-    if cursor.fetchone():
-
-        cursor.execute('DELETE FROM Likes WHERE post_id = %s AND user_id = %s', (post_id, user_id))
+        liked_status = False
+        if action == 'like':
+            cursor.execute('INSERT INTO Likes (post_id, user_id) VALUES (%s, %s)', (post_id, user_id))
+            liked_status = True
+        elif action == 'unlike':
+            cursor.execute('DELETE FROM Likes WHERE post_id = %s AND user_id = %s', (post_id, user_id))
+            liked_status = False
+        
         conn.commit()
-        flash("Like removed.", "info")
-    else:
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            'status': 'success',
+            'liked': liked_status
+        })
 
-        cursor.execute('INSERT INTO Likes (post_id, user_id) VALUES (%s, %s)', (post_id, user_id))
-        conn.commit()
-        flash("Post liked successfully!", "success")
+    except Exception as e:
+        print(f"Error in /like API: {e}")
+        return jsonify({'status': 'error', 'message': 'サーバーエラーが発生しました'}), 500
 
-    cursor.close()
-
-    conn.close()
-    return redirect('/')
 @app.route('/comment/<int:post_id>', methods=['POST'])
 def comment(post_id):
     if 'user_id' not in session:
         return redirect('/login')
 
     content = request.form.get('content')
-    print(f"Received post_id: {post_id}, content: {content}") 
-
     if not content:
         return "コメントが空です", 400
 
     user_id = session['user_id']
-
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('INSERT INTO messages (content, sender_id, post_id) VALUES (%s, %s, %s)', (content, user_id, post_id))
@@ -141,22 +150,16 @@ def follow():
     conn = get_connection()
     cursor = conn.cursor()
 
-    
     cursor.execute('SELECT * FROM Follows WHERE follower_id = %s AND followed_id = %s', (user_id, followed_user_id))
     follow_record = cursor.fetchone()
 
     if follow_record:
-
         cursor.execute('DELETE FROM Follows WHERE follower_id = %s AND followed_id = %s', (user_id, followed_user_id))
-
         cursor.execute('UPDATE users SET follow_count = follow_count - 1 WHERE id = %s', (user_id,))
         cursor.execute('UPDATE users SET follower_count = follower_count - 1 WHERE id = %s', (followed_user_id,))
         flash("フォローを解除しました", "info")
     else:
-      
         cursor.execute('INSERT INTO Follows (follower_id, followed_id) VALUES (%s, %s)', (user_id, followed_user_id))
-
-        
         cursor.execute('UPDATE users SET follow_count = follow_count + 1 WHERE id = %s', (user_id,))
         cursor.execute('UPDATE users SET follower_count = follower_count + 1 WHERE id = %s', (followed_user_id,))
         flash("フォローしました", "success")
@@ -167,9 +170,6 @@ def follow():
 
     return redirect('/')
 
-
-
-
 @app.route('/',methods=['postpagebtn'])
 def page_post_transition():
     return redirect('/post')
@@ -177,7 +177,6 @@ def page_post_transition():
 @app.route('/', methods=['mypagebtn'])
 def page_mypage_transition():
     return redirect('/mypage')
-
 
 @app.route('/mypage', methods=['GET'])
 def mypage():
@@ -191,7 +190,6 @@ def mypage():
     cursor.execute('SELECT username FROM users WHERE id = %s', (user_id,))
     username = cursor.fetchone()[0]
 
-    # フォロー・フォロワー数
     cursor.execute('SELECT follow_count, follower_count FROM users WHERE id = %s', (user_id,))
     result = cursor.fetchone()
     if result is None:
@@ -199,7 +197,6 @@ def mypage():
     else:
         follow_data = [("フォロー", result[0]), ("フォロワー", result[1])]
 
-    # いいねした投稿
     cursor.execute('''
         SELECT Posts.id, Posts.content, Posts.username
         FROM Likes
@@ -207,38 +204,38 @@ def mypage():
         WHERE Likes.user_id = %s
     ''', (user_id,))
     liked_posts = cursor.fetchall()
-    print("liked_posts:", liked_posts)  # デバッグ用
 
-    # 自分のコメント
     cursor.execute('''
         SELECT messages.id, messages.content, messages.post_id
         FROM messages
         WHERE messages.sender_id = %s
     ''', (user_id,))
     my_comments = cursor.fetchall()
-    print("my_comments:", my_comments)  # デバッグ用
 
-    # 自分の過去の投稿
     cursor.execute('''
-    SELECT id, content, username FROM Posts WHERE user_id = %s
-''', (user_id,))
+        SELECT id, content, username FROM Posts WHERE user_id = %s
+    ''', (user_id,))
     my_posts = cursor.fetchall()
     postid = my_posts[0][0] if my_posts else None
-    cursor.execute('''SELECT content, sender_id, post_id FROM messages WHERE post_id = %s''', (postid,))
-    my_comment = cursor.fetchall()
+    
+    my_comment = []
+    if postid:
+        cursor.execute('''SELECT content, sender_id, post_id FROM messages WHERE post_id = %s''', (postid,))
+        my_comment = cursor.fetchall()
+        
     cursor.close()
     conn.close()
 
     return render_template(
-    'mypage.html',
-    follow=follow_data,
-    liked_posts=liked_posts,
-    my_comments=my_comments,
-    my_posts=my_posts,
-    my_comment=my_comment,
-    username=username
-)
-##
+        'mypage.html',
+        follow=follow_data,
+        liked_posts=liked_posts,
+        my_comments=my_comments,
+        my_posts=my_posts,
+        my_comment=my_comment,
+        username=username
+    )
+
 @app.route('/edit_username', methods=['POST'])
 def edit_username():
     if 'user_id' not in session:
@@ -254,7 +251,7 @@ def edit_username():
     conn.close()
     flash("ユーザーネームを変更しました", "success")
     return redirect('/mypage')
-##
+
 @app.route('/post', methods=['GET'])
 def post_form():
     return render_template('post.html')
@@ -278,8 +275,6 @@ def login_post():
         return redirect('/')
     else:
         flash("adress or password is incorret","error")
-        cursor.close()
-        conn.close()
         return redirect('/login')
     
 @app.route('/register', methods=['GET', 'POST'])
@@ -298,6 +293,5 @@ def register():
         return redirect('/login')
     return render_template('register.html')
 
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)  
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -70,7 +70,6 @@
                     </div>
                     <div class="post-content">
                         <span class="post-text">{{ post[1] }}</span>
-                        <span class="post-id">（投稿ID: {{ post[0] }}）</span>
                     </div>
                 </div>
             {% endfor %}
@@ -87,15 +86,11 @@
             {% for comment in my_comments %}
             <div class="comment-item">
                 <div class="post-user-info">
-                    <div class="post-avatar">{{ comment[0] }}</div>
+                    <div class="post-avatar">{{ comment[1] }}</div>
                 </div>
                 <div class="post-content">
                     <span class="post-text">{{ comment[1] }}</span>
                     <div class="comment-meta" style="font-size: 0.95em; color: #666; margin-top: 3px;">
-                       
-                        投稿: 
-                        「{{ comment[3] }}」
-                        <span style="margin-left:8px;">by {{ comment[4] }}</span>
                     </div>
                 </div>
             </div>

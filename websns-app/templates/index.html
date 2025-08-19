@@ -3,326 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>nemui</title>
+    <title>nemui - Timeline</title>
+    <!-- Google Fonts をインポート -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* --- 基本設定 --- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        /* ★ カラーパレットと基本スタイル */
+        :root {
+            --primary-color: #ff7b7b;
+            --primary-light: #fff0f0;
+            --primary-gradient: linear-gradient(135deg, #ff9a9e 0%, #ff7b7b 100%);
+            --background-color: #f8f9fa;
+            --surface-color: #ffffff;
+            --text-color: #212121;
+            --text-secondary: #6c757d;
+            --border-color: #e9ecef;
+            --card-shadow: 0 4px 15px rgba(180, 180, 180, 0.08);
+            --card-hover-shadow: 0 8px 25px rgba(180, 180, 180, 0.12);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
+            font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background-color: white;
+            background-color: var(--surface-color);
             min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.05);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        header {
-            background-color: white;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e1e8ed;
+        /* --- ヘッダー --- */
+        .header {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 10px;
-        }
+        .logo { font-size: 24px; font-weight: 700; color: var(--primary-color); }
+        .header-buttons { display: flex; gap: 10px; }
 
         .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-block;
+            padding: 8px 16px; border: none; border-radius: 20px; font-size: 14px;
+            font-weight: 500; cursor: pointer; transition: all 0.25s ease;
+            text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
         }
-
-        .btn-secondary {
-            background-color: #f0f0f0;
-            color: #333;
-        }
-
-        .btn-secondary:hover {
-            background-color: #e0e0e0;
-        }
-
+        .btn-secondary { background-color: var(--border-color); color: var(--text-color); }
+        .btn-secondary:hover { background-color: #d8dee4; }
         .btn-primary {
-            background-color: #ff7b7b;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
+            background: var(--primary-gradient); color: white; width: 40px; height: 40px;
+            border-radius: 50%; font-size: 22px; line-height: 1;
+            box-shadow: 0 2px 8px rgba(255, 123, 123, 0.4);
         }
-
-        .btn-primary:hover {
-            background-color: #ff6b6b;
-        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 123, 123, 0.5); }
 
         .page-title {
-            text-align: center;
-            padding: 20px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            border-bottom: 1px solid #e1e8ed;
+            padding: 20px; font-size: 18px; font-weight: 600; color: var(--text-color);
+            border-bottom: 1px solid var(--border-color); background-color: var(--surface-color);
         }
 
-        .posts-container {
-            padding: 0;
-        }
-
+        /* --- 投稿リスト --- */
+        .posts-container { padding: 8px 0; }
         .post-item {
-            display: flex;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e1e8ed;
-            transition: background-color 0.2s ease;
+            display: flex; padding: 20px; border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s ease; animation: fadeIn 0.5s ease-out forwards;
         }
-
-        .post-item:hover {
-            background-color: #f9f9f9;
+        .post-item:hover { background-color: #fafafa; }
+        .post-item .avatar {
+            width: 50px; height: 50px; border-radius: 50%; background-color: var(--primary-light);
+            color: var(--primary-color); margin-right: 15px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 700;
         }
-
-        .avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #ddd;
-            margin-right: 15px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .post-content {
-            flex: 1;
-            min-width: 0;
-        }
-
+        .post-content { flex: 1; min-width: 0; }
         .post-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
         }
-
-        .username {
-            font-weight: 600;
-            color: #333;
-            margin-right: 10px;
-        }
-
+        .post-header .username { font-weight: 700; color: var(--text-color); font-size: 16px; }
         .post-text {
-            color: #333;
-            font-size: 15px;
-            line-height: 1.4;
-            margin-bottom: 10px;
-            word-break: break-word;
+            color: var(--text-color); font-size: 15px; line-height: 1.7;
+            margin-bottom: 16px; word-break: break-word;
         }
-
-        .post-actions {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
+        
+        /* --- 投稿アクションボタン --- */
+        .post-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
         .action-btn {
-            background: none;
-            border: none;
-            padding: 5px;
-            cursor: pointer;
-            color: #666;
-            transition: color 0.2s ease;
-            font-size: 16px;
+            background: none; border: none; padding: 5px; cursor: pointer;
+            color: var(--text-secondary); transition: color 0.2s, transform 0.2s ease;
+            font-size: 20px;
         }
-
-        .action-btn:hover {
-            color: #333;
+        .action-btn:hover { color: var(--primary-color); transform: scale(1.1); }
+        .like-button { /* フォームでなくなったため、一部スタイルを直接適用 */
+             padding: 0; /* action-btnにpaddingがあるのでリセット */
         }
-
-        .like-btn.liked {
-            color: #e91e63;
+        .like-button span {
+            font-size: 20px; transition: transform 0.2s ease; display: inline-block;
         }
-
-        .follow-btn {
-            background-color: #1da1f2;
-            color: white;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
+        .like-button:hover span { transform: scale(1.15); }
+        .follow-button {
+            background-color: var(--primary-color); color: white; border: none;
+            padding: 6px 16px; border-radius: 16px; font-size: 13px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s ease;
         }
+        .follow-button.following { background-color: #fff; color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .follow-button:hover { filter: brightness(1.1); }
 
-        .follow-btn:hover {
-            background-color: #1991db;
-        }
-
-        .follow-btn.following {
-            background-color: #657786;
-        }
-
-        .comment-form {
-            display: none;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #e1e8ed;
-        }
-
+        /* --- コメント --- */
+        .comment-form { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); }
         .comment-form textarea {
-            width: 100%;
-            border: 1px solid #e1e8ed;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 14px;
-            resize: vertical;
-            min-height: 60px;
-            font-family: inherit;
+            width: 100%; border: 1px solid var(--border-color); border-radius: 8px;
+            padding: 10px; font-size: 14px; resize: vertical; min-height: 60px;
+            font-family: inherit; transition: border-color 0.2s;
         }
-
-        .comment-form textarea:focus {
-            outline: none;
-            border-color: #1da1f2;
-        }
-
+        .comment-form textarea:focus { outline: none; border-color: var(--primary-color); }
         .comment-form button {
-            margin-top: 8px;
-            background-color: #1da1f2;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 16px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
+            margin-top: 8px; background: var(--primary-gradient); color: white;
+            border: none; padding: 8px 18px; border-radius: 16px;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
         }
+        .comment-form button:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .comment-form button:disabled { background: #ccc; cursor: not-allowed; }
+        .comments { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); }
+        .comments h3 { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+        .comments ul { list-style: none; }
+        .comments li { padding: 10px 0; font-size: 14px; border-bottom: 1px solid #f5f5f5; }
+        .comments li:last-child { border-bottom: none; }
+        .comments li strong { font-weight: 600; color: var(--text-color); margin-right: 8px; }
 
-        .comment-form button:hover {
-            background-color: #1991db;
-        }
-
-        .comment-form button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .comments {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .comments h3 {
-            font-size: 14px;
-            color: #657786;
-            margin-bottom: 8px;
-        }
-
-        .comment-item {
-            padding: 8px 0;
-            font-size: 14px;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
-
-        .comment-item:last-child {
-            border-bottom: none;
-        }
-
-        .comment-avatar {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background-color: #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: #666;
-            flex-shrink: 0;
-        }
-
-        .comment-content {
-            flex: 1;
-        }
-
-        .comment-username {
-            font-weight: 600;
-            color: #333;
-            margin-right: 8px;
-        }
-
-        .comment-text {
-            color: #333;
-        }
-
-        .comments-list {
-            display: none;
-        }
-
-        .comments-list.show {
-            display: block;
-        }
-
-        .hashtag {
-            color: #1da1f2;
-            font-weight: 500;
-        }
-
+        /* --- レスポンシブ --- */
         @media (max-width: 768px) {
-            .container {
-                margin: 0;
-            }
-            
-            .post-item {
-                padding: 12px 15px;
-            }
-            
-            .avatar {
-                width: 40px;
-                height: 40px;
-                margin-right: 12px;
-            }
+            .container { box-shadow: none; }
+            .post-item { padding: 15px; }
+            .post-item .avatar { width: 40px; height: 40px; margin-right: 12px; font-size: 14px; }
+            .post-header .username { font-size: 15px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
+        <header class="header">
             <div class="logo">nemui</div>
             <div class="header-buttons">
                 <form method="GET" action="/mypage" style="display:inline;">
@@ -333,184 +180,145 @@
                 </form>
             </div>
         </header>
-        <div class="page-title">投稿一覧</div>
-        <ul>
-          {% for post in posts %}
-            <li>
-              <div class="posts-container">
-                <div class="post-item">
-                  <div class="avatar">{{ post[0][:2] }}</div> 
-                  <div class="post-content">
-                    <div class="post-header">
-                      <span class="username">{{ post[0] }}</span> 
-                    </div>
-        
-                    <div class="post-text">{{ post[1] }}</div>  
-        
-                    <div class="post-actions">
-                    
-                      <button class="action-btn" onclick="toggleCommentForm('{{ post[2] }}')">💬</button>
-        
-                     
-                      <form method="POST" action="/like" style="display:inline;">
-                        <input type="hidden" name="post_id" value="{{ post[2] }}">
-                        <button type="submit" class="like-button" aria-label="いいね">
+
+        <main>
+            <div class="page-title">投稿一覧</div>
+            <div class="posts-container">
+                <!-- Jinja2のループ部分はそのまま -->
+                {% for post in posts %}
+                  <div class="post-item">
+                    <div class="avatar">{{ post[0][:2] }}</div> 
+                    <div class="post-content">
+                      <div class="post-header">
+                        <span class="username">{{ post[0] }}</span> 
+                        {% if post[3] != session['user_id'] %}
+                        <form method="POST" action="/follow" style="display:inline;">
+                          <input type="hidden" name="followed_user_id" value="{{ post[3] }}">
+                          {% if post[3] in followed_user_ids %}
+                            <button type="submit" class="follow-button following">フォロー中</button>
+                          {% else %}
+                            <button type="submit" class="follow-button">フォロー</button>
+                          {% endif %}
+                        </form>
+                        {% endif %}
+                      </div>
+          
+                      <div class="post-text">{{ post[1] }}</div>  
+          
+                      <div class="post-actions">
+                        <button class="action-btn" onclick="toggleCommentForm('{{ post[2] }}')" title="コメント">💬</button>
+                        
+                        <!-- ★★★★★ここが変更点★★★★★ -->
+                        <!-- formを削除し、data属性を持つbuttonに変更 -->
+                        <button class="like-button action-btn" 
+                                aria-label="いいね"
+                                data-post-id="{{ post[2] }}"
+                                data-liked="{{ 'true' if post[2] in like_post_ids else 'false' }}">
                           {% if post[2] in like_post_ids %}
                             <span style="color:red;">❤️</span>
                           {% else %}
                             <span style="color:gray;">🤍</span>
                           {% endif %}
                         </button>
-                      </form>
-        
-                  
-                      {% if post[3] != session['user_id'] %}
-                      <form method="POST" action="/follow" style="display:inline;">
-                        <input type="hidden" name="followed_user_id" value="{{ post[3] }}">
-                        {% if post[3] in followed_user_ids %}
-                          <button type="submit" class="follow-button">フォロー中</button>
-                        {% else %}
-                          <button type="submit" class="follow-button">フォローする</button>
-                        {% endif %}
-                      </form>
-                      {% endif %}
-                    </div>
-        
-                
-                    <div id="comment-form-{{ post[2] }}" class="comment-form" style="display:none;">
-                      <form method="POST" action="/comment/{{ post[2] }}">
-                        <textarea name="content" rows="2" cols="50" placeholder="コメントを入力してください" required></textarea>
-                        <br>
-                        <button type="submit">送信</button>
-                      </form>
-                    </div>
-        
-                   
-                    <div class="comments">
-                      <h3>コメント一覧:</h3>
-                      <ul>
-                        {% for comment in comments_by_post[post[2]] %}
-                          <li><strong>{{ comment.username }}</strong>: {{ comment.content }}</li>
-                        {% endfor %}
-                      </ul>
+                        <!-- ★★★★★変更はここまで★★★★★ -->
+                      </div>
+          
+                      <div id="comment-form-{{ post[2] }}" class="comment-form" style="display:none;">
+                        <form method="POST" action="/comment/{{ post[2] }}">
+                          <textarea name="content" rows="2" cols="50" placeholder="コメントを入力..." required></textarea>
+                          <br>
+                          <button type="submit">送信</button>
+                        </form>
+                      </div>
+          
+                      <div class="comments">
+                        <h3>コメント一覧</h3>
+                        <ul id="comments-list-{{ post[2] }}">
+                          {% for comment in comments_by_post[post[2]] %}
+                            <li><strong>{{ comment.username }}</strong>: {{ comment.content }}</li>
+                          {% endfor %}
+                        </ul>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </li>
-          {% endfor %}
-        </ul>
-        
+                {% endfor %}
+            </div>
+        </main>
+    </div>
 
+    <!-- ▼▼▼▼▼ここからJavaScript▼▼▼▼▼ -->
     <script>
-      
-        const currentUser = "あなた";
-
+        // コメントフォームの表示/非表示を切り替える関数
         function toggleCommentForm(postId) {
             const form = document.getElementById(`comment-form-${postId}`);
-            const commentsList = document.getElementById(`comments-list-${postId}`);
-            
             if (form.style.display === "none" || form.style.display === "") {
                 form.style.display = "block";
-         
-                const commentsContainer = commentsList.querySelector('.comments-container');
-                if (commentsContainer.children.length > 0) {
-                    commentsList.classList.add('show');
-                }
             } else {
                 form.style.display = "none";
             }
         }
+        
+        // ★★★★★ここからが新しく追加したAjax処理★★★★★
+        // ページのDOM（HTMLの要素）がすべて読み込まれたら実行
+        document.addEventListener('DOMContentLoaded', () => {
 
-        function addComment(event, postId) {
-            event.preventDefault();
-            console.log('コメント送信開始:', postId);
-            
-            const form = event.target;
-            const textarea = form.querySelector('textarea');
-            const commentText = textarea.value.trim();
-            
-            console.log('コメントテキスト:', commentText);
-            
-            if (commentText === '') {
-                alert('コメントを入力してください');
-                return;
-            }
-            
-    
-            const commentsList = document.getElementById(`comments-list-${postId}`);
-            const commentsContainer = commentsList.querySelector('.comments-container');
-            
-            const commentElement = document.createElement('div');
-            commentElement.className = 'comment-item';
-            commentElement.innerHTML = `
-                <div class="comment-avatar">あ</div>
-                <div class="comment-content">
-                    <span class="comment-username">${currentUser}</span>
-                    <span class="comment-text">${commentText}</span>
-                </div>
-            `;
-            
-            commentsContainer.appendChild(commentElement);
-            
+            // すべての「いいねボタン」(.like-buttonクラスを持つ要素)を取得
+            const likeButtons = document.querySelectorAll('.like-button');
 
-            commentsList.classList.add('show');
-      
-            textarea.value = '';
-            
+            // 取得した各ボタンに対して、クリックイベントを追加
+            likeButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault(); // ボタンのデフォルトの動作をキャンセル
 
-            const commentForm = document.getElementById(`comment-form-${postId}`);
-            commentForm.style.display = "none";
-            
-            console.log('コメント追加完了');
-        }
+                    const postId = this.dataset.postId; // data-post-idの値を取得
+                    let isLiked = this.dataset.liked === 'true'; // data-likedの値を取得
 
-       
-        document.addEventListener('DOMContentLoaded', function() {
-            const textareas = document.querySelectorAll('.comment-form textarea');
-            textareas.forEach(textarea => {
-                const button = textarea.nextElementSibling;
-                
-                textarea.addEventListener('input', function() {
-                    if (this.value.trim() === '') {
-                        button.disabled = true;
-                    } else {
-                        button.disabled = false;
-                    }
+                    // これから行う操作を決定 (いいねされていれば'unlike', されていなければ'like')
+                    const action = isLiked ? 'unlike' : 'like';
+
+                    // サーバーの '/like' エンドポイントに非同期リクエストを送信
+                    fetch('/like', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', // JSON形式でデータを送ることをサーバーに伝える
+                        },
+                        // 送信するデータ本体。JavaScriptオブジェクトをJSON文字列に変換
+                        body: JSON.stringify({ 
+                            post_id: postId,
+                            action: action 
+                        }),
+                    })
+                    .then(response => response.json()) // サーバーからの返信をJSONとして解析
+                    .then(data => {
+                        // 通信が成功したら
+                        if (data.status === 'success') {
+                            const iconSpan = this.querySelector('span');
+                            
+                            // サーバーからの新しい「いいね状態」に基づいてボタンの表示を更新
+                            if (data.liked) {
+                                // いいねされた状態に更新
+                                iconSpan.style.color = 'red';
+                                iconSpan.textContent = '❤️';
+                                this.dataset.liked = 'true'; // ボタンの状態も更新
+                            } else {
+                                // いいねが解除された状態に更新
+                                iconSpan.style.color = 'gray';
+                                iconSpan.textContent = '🤍';
+                                this.dataset.liked = 'false'; // ボタンの状態も更新
+                            }
+                        } else {
+                             alert('いいねに失敗しました。');
+                        }
+                    })
+                    .catch(error => {
+                        // 通信自体に失敗した場合
+                        console.error('Error:', error);
+                        alert('エラーが発生しました。もう一度お試しください。');
+                    });
                 });
-                
-          
-                button.disabled = true;
             });
         });
-
-
-        document.querySelectorAll('.like-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                if (this.classList.contains('liked')) {
-                    this.classList.remove('liked');
-                    this.innerHTML = '🤍';
-                } else {
-                    this.classList.add('liked');
-                    this.innerHTML = '❤️';
-                }
-            });
-        });
-
-     
-        document.querySelectorAll('.follow-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                if (this.classList.contains('following')) {
-                    this.classList.remove('following');
-                    this.textContent = 'フォロー';
-                    this.style.backgroundColor = '#1da1f2';
-                } else {
-                    this.classList.add('following');
-                    this.textContent = 'フォロー中';
-                    this.style.backgroundColor = '#657786';
-                }
-            });
-        });
+        // ★★★★★追加部分はここまで★★★★★
     </script>
 </body>
 </html>
