@@ -138,37 +138,58 @@ def post():
 @app.route('/follow', methods=['POST'])
 def follow():
     if 'user_id' not in session:
-        return redirect('/login')
+        return jsonify({'status': 'error', 'message': 'ログインが必要です。'}), 401
 
-    user_id = session['user_id']
-    followed_user_id = request.form['followed_user_id']
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'status': 'error', 'message': 'データがありません。'}), 400
+            
+        followed_user_id = data.get('followed_user_id')
+        action = data.get('action') 
+        follower_id = session['user_id'] 
 
-    if str(user_id) == str(followed_user_id):
-        flash("自分をフォローすることはできません", "warning")
-        return redirect('/')
+        if str(follower_id) == str(followed_user_id):
+            return jsonify({'status': 'error', 'message': '自分自身をフォローすることはできません。'}), 400
 
-    conn = get_connection()
-    cursor = conn.cursor()
+        conn = get_connection()
+        cursor = conn.cursor()
 
-    cursor.execute('SELECT * FROM Follows WHERE follower_id = %s AND followed_id = %s', (user_id, followed_user_id))
-    follow_record = cursor.fetchone()
+        new_state = False
+        if action == 'follow':
+ 
+            cursor.execute('INSERT INTO Follows (follower_id, followed_id) VALUES (%s, %s)', (follower_id, followed_user_id))
+            
+            cursor.execute('UPDATE users SET follow_count = follow_count + 1 WHERE id = %s', (follower_id,))
+        
+            cursor.execute('UPDATE users SET follower_count = follower_count + 1 WHERE id = %s', (followed_user_id,))
+            
+            
+            new_state = True
 
-    if follow_record:
-        cursor.execute('DELETE FROM Follows WHERE follower_id = %s AND followed_id = %s', (user_id, followed_user_id))
-        cursor.execute('UPDATE users SET follow_count = follow_count - 1 WHERE id = %s', (user_id,))
-        cursor.execute('UPDATE users SET follower_count = follower_count - 1 WHERE id = %s', (followed_user_id,))
-        flash("フォローを解除しました", "info")
-    else:
-        cursor.execute('INSERT INTO Follows (follower_id, followed_id) VALUES (%s, %s)', (user_id, followed_user_id))
-        cursor.execute('UPDATE users SET follow_count = follow_count + 1 WHERE id = %s', (user_id,))
-        cursor.execute('UPDATE users SET follower_count = follower_count + 1 WHERE id = %s', (followed_user_id,))
-        flash("フォローしました", "success")
+        elif action == 'unfollow':
+            
+            cursor.execute('DELETE FROM Follows WHERE follower_id = %s AND followed_id = %s', (follower_id, followed_user_id))
 
-    conn.commit()
-    cursor.close()
-    conn.close()
+            cursor.execute('UPDATE users SET follow_count = GREATEST(0, follow_count - 1) WHERE id = %s', (follower_id,))
+            
+            cursor.execute('UPDATE users SET follower_count = GREATEST(0, follower_count - 1) WHERE id = %s', (followed_user_id,))
+         
 
-    return redirect('/')
+            new_state = False
+        
+        else:
+            return jsonify({'status': 'error', 'message': '無効なアクションです。'}), 400
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({'status': 'success', 'followed': new_state})
+
+    except Exception as e:
+        print(f"Error in /follow route: {e}") 
+        return jsonify({'status': 'error', 'message': 'サーバーエラーが発生しました。'}), 500
 
 @app.route('/',methods=['postpagebtn'])
 def page_post_transition():

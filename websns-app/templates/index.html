@@ -121,9 +121,7 @@
             font-size: 20px;
         }
         .action-btn:hover { color: var(--primary-color); transform: scale(1.1); }
-        .like-button { /* フォームでなくなったため、一部スタイルを直接適用 */
-             padding: 0; /* action-btnにpaddingがあるのでリセット */
-        }
+        .like-button { padding: 0; }
         .like-button span {
             font-size: 20px; transition: transform 0.2s ease; display: inline-block;
         }
@@ -184,23 +182,26 @@
         <main>
             <div class="page-title">投稿一覧</div>
             <div class="posts-container">
-                <!-- Jinja2のループ部分はそのまま -->
                 {% for post in posts %}
                   <div class="post-item">
                     <div class="avatar">{{ post[0][:2] }}</div> 
                     <div class="post-content">
                       <div class="post-header">
                         <span class="username">{{ post[0] }}</span> 
+                        
+                        <!-- ★★★★★ここがフォローボタンの変更点★★★★★ -->
                         {% if post[3] != session['user_id'] %}
-                        <form method="POST" action="/follow" style="display:inline;">
-                          <input type="hidden" name="followed_user_id" value="{{ post[3] }}">
-                          {% if post[3] in followed_user_ids %}
-                            <button type="submit" class="follow-button following">フォロー中</button>
-                          {% else %}
-                            <button type="submit" class="follow-button">フォロー</button>
-                          {% endif %}
-                        </form>
+                          <button 
+                            class="follow-button {% if post[3] in followed_user_ids %}following{% endif %}"
+                            data-user-id="{{ post[3] }}">
+                            {% if post[3] in followed_user_ids %}
+                              フォロー中
+                            {% else %}
+                              フォロー
+                            {% endif %}
+                          </button>
                         {% endif %}
+                        <!-- ★★★★★変更はここまで★★★★★ -->
                       </div>
           
                       <div class="post-text">{{ post[1] }}</div>  
@@ -208,8 +209,6 @@
                       <div class="post-actions">
                         <button class="action-btn" onclick="toggleCommentForm('{{ post[2] }}')" title="コメント">💬</button>
                         
-                        <!-- ★★★★★ここが変更点★★★★★ -->
-                        <!-- formを削除し、data属性を持つbuttonに変更 -->
                         <button class="like-button action-btn" 
                                 aria-label="いいね"
                                 data-post-id="{{ post[2] }}"
@@ -220,7 +219,6 @@
                             <span style="color:gray;">🤍</span>
                           {% endif %}
                         </button>
-                        <!-- ★★★★★変更はここまで★★★★★ -->
                       </div>
           
                       <div id="comment-form-{{ post[2] }}" class="comment-form" style="display:none;">
@@ -234,7 +232,7 @@
                       <div class="comments">
                         <h3>コメント一覧</h3>
                         <ul id="comments-list-{{ post[2] }}">
-                          {% for comment in comments_by_post[post[2]] %}
+                          {% for comment in comments_by_post.get(post[2], []) %}
                             <li><strong>{{ comment.username }}</strong>: {{ comment.content }}</li>
                           {% endfor %}
                         </ul>
@@ -258,67 +256,90 @@
             }
         }
         
-        // ★★★★★ここからが新しく追加したAjax処理★★★★★
         // ページのDOM（HTMLの要素）がすべて読み込まれたら実行
         document.addEventListener('DOMContentLoaded', () => {
 
-            // すべての「いいねボタン」(.like-buttonクラスを持つ要素)を取得
+            // --- いいねボタンの処理 ---
             const likeButtons = document.querySelectorAll('.like-button');
-
-            // 取得した各ボタンに対して、クリックイベントを追加
             likeButtons.forEach(button => {
                 button.addEventListener('click', function(event) {
-                    event.preventDefault(); // ボタンのデフォルトの動作をキャンセル
+                    event.preventDefault();
 
-                    const postId = this.dataset.postId; // data-post-idの値を取得
-                    let isLiked = this.dataset.liked === 'true'; // data-likedの値を取得
-
-                    // これから行う操作を決定 (いいねされていれば'unlike', されていなければ'like')
+                    const postId = this.dataset.postId;
+                    let isLiked = this.dataset.liked === 'true';
                     const action = isLiked ? 'unlike' : 'like';
 
-                    // サーバーの '/like' エンドポイントに非同期リクエストを送信
                     fetch('/like', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json', // JSON形式でデータを送ることをサーバーに伝える
-                        },
-                        // 送信するデータ本体。JavaScriptオブジェクトをJSON文字列に変換
-                        body: JSON.stringify({ 
-                            post_id: postId,
-                            action: action 
-                        }),
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ post_id: postId, action: action }),
                     })
-                    .then(response => response.json()) // サーバーからの返信をJSONとして解析
+                    .then(response => response.json())
                     .then(data => {
-                        // 通信が成功したら
                         if (data.status === 'success') {
                             const iconSpan = this.querySelector('span');
-                            
-                            // サーバーからの新しい「いいね状態」に基づいてボタンの表示を更新
                             if (data.liked) {
-                                // いいねされた状態に更新
                                 iconSpan.style.color = 'red';
                                 iconSpan.textContent = '❤️';
-                                this.dataset.liked = 'true'; // ボタンの状態も更新
+                                this.dataset.liked = 'true';
                             } else {
-                                // いいねが解除された状態に更新
                                 iconSpan.style.color = 'gray';
                                 iconSpan.textContent = '🤍';
-                                this.dataset.liked = 'false'; // ボタンの状態も更新
+                                this.dataset.liked = 'false';
                             }
                         } else {
                              alert('いいねに失敗しました。');
                         }
                     })
                     .catch(error => {
-                        // 通信自体に失敗した場合
                         console.error('Error:', error);
                         alert('エラーが発生しました。もう一度お試しください。');
                     });
                 });
             });
+
+            // ★★★★★ここからが新しく追加したフォロー処理★★★★★
+            const followButtons = document.querySelectorAll('.follow-button');
+            followButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    const followedUserId = this.dataset.userId;
+                    const isFollowing = this.classList.contains('following');
+                    const action = isFollowing ? 'unfollow' : 'follow';
+
+                    fetch('/follow', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            followed_user_id: followedUserId,
+                            action: action,
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            if (data.followed) {
+                                // フォローした状態に更新
+                                this.textContent = 'フォロー中';
+                                this.classList.add('following');
+                            } else {
+                                // フォロー解除した状態に更新
+                                this.textContent = 'フォロー';
+                                this.classList.remove('following');
+                            }
+                        } else {
+                            alert('処理に失敗しました: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('エラーが発生しました。もう一度お試しください。');
+                    });
+                });
+            });
+            // ★★★★★追加部分はここまで★★★★★
         });
-        // ★★★★★追加部分はここまで★★★★★
     </script>
 </body>
 </html>
