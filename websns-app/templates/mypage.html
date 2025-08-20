@@ -16,37 +16,39 @@
                 <button class="edit-btn">編集</button>
 
             </div>
-            <div class="user-info">
-                <div class="avatar">
-                    <span>{{ username[0] }}</span>
-                </div>
-                <span class="username" id="username-display">{{ username }}</span>
-                <!-- 編集フォーム（最初は非表示） -->
-                <form id="edit-username-form" action="/edit_username" method="POST" style="display:none;">
-                    <input type="text" name="new_username" value="{{ username }}" required>
-                    <button type="submit">保存</button>
-                    <button type="button" onclick="cancelEdit()">キャンセル</button>
-                </form>
-                <div class="follow-stats">
-                    {% for label, count in follow %}
-                    <div class="follow-item">
-                        <span class="stat-number">{{ count }}</span>
-                        <span class="stat-label">{{ label }}</span>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            
-            <script>
-                document.querySelector('.edit-btn').onclick = function() {
-                    document.getElementById('username-display').style.display = 'none';
-                    document.getElementById('edit-username-form').style.display = 'inline';
-                };
-                function cancelEdit() {
-                    document.getElementById('edit-username-form').style.display = 'none';
-                    document.getElementById('username-display').style.display = 'inline';
-                }
-            </script>
+        <!-- ...既存のユーザー名表示部分を以下のように変更... -->
+<div class="user-info">
+    <div class="avatar">
+        <span>{{ username[0] }}</span>
+    </div>
+    <span class="username" id="username-display">{{ username }}</span>
+    <!-- 編集フォーム（最初は非表示） -->
+    <form id="edit-username-form" action="/edit_username" method="POST" style="display:none;">
+        <input type="text" name="new_username" value="{{ username }}" required>
+        <button type="submit">保存</button>
+        <button type="button" onclick="cancelEdit()">キャンセル</button>
+    </form>
+    <div class="follow-stats">
+        {% for label, count in follow %}
+        <div class="follow-item">
+            <span class="stat-number">{{ count }}</span>
+            <span class="stat-label">{{ label }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    document.querySelector('.edit-btn').onclick = function() {
+        document.getElementById('username-display').style.display = 'none';
+        document.getElementById('edit-username-form').style.display = 'inline';
+    };
+    function cancelEdit() {
+        document.getElementById('edit-username-form').style.display = 'none';
+        document.getElementById('username-display').style.display = 'inline';
+    }
+</script>
+        
         </header>
 
         <!-- タブメニュー -->
@@ -56,39 +58,26 @@
             <button class="tab" onclick="showTab('likes')">いいね</button>
         </nav>
 
-        <main id="posts" class="tab-content active">
-            <div class="posts">
-                {% if posts_with_posts %}
-                    {% for post in posts_with_posts %}
-                        <div class="post-block">
-                            <div class="post-user-info">
-                                <div class="post-avatar">{{ post.username[:1] }}</div>
-                                <div class="post-username">{{ post.username }}</div>
-                            </div>
-                            <div class="post-content">
-                                <span class="post-text">{{ post.content }}</span>
-                            </div>
-                            {% if post.comments %}
-                                <div class="post-username">コメント一覧</div>
-                                <ul class="comment-list">
-                                    {% for comment in post.comments %}
-                                        <li class="comment-item">
-                                            <span class="comment-text">{{ comment[0] }}</span>
-                                            <span class="comment-author">（by: {{ comment[1] }}）</span>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <div class="no-comments">コメントはありません</div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p>まだ投稿はありません。</p>
-                {% endif %}
-            </div>
-        </main>
-
+      <!-- 投稿タブ -->
+<main id="posts" class="tab-content active">
+    <div class="posts">
+        {% if my_posts %}
+            {% for post in my_posts %}
+                <div class="post-block">
+                    <div class="post-user-info">
+                        <div class="post-avatar">{{ post[2][:1] }}</div>
+                        <div class="post-username">{{ post[2] }}</div>
+                    </div>
+                    <div class="post-content">
+                        <span class="post-text">{{ post[1] }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>まだ投稿はありません。</p>
+        {% endif %}
+    </div>
+</main>
         <!-- コメント一覧 -->
         
 <main id="comments" class="tab-content">
@@ -97,15 +86,11 @@
             {% for comment in my_comments %}
             <div class="comment-item">
                 <div class="post-user-info">
-                    <div class="post-avatar">{{ comment[0] }}</div>
+                    <div class="post-avatar">{{ comment[1] }}</div>
                 </div>
                 <div class="post-content">
                     <span class="post-text">{{ comment[1] }}</span>
                     <div class="comment-meta" style="font-size: 0.95em; color: #666; margin-top: 3px;">
-                       
-                        投稿: 
-                        「{{ comment[3] }}」
-                        <span style="margin-left:8px;">by {{ comment[4] }}</span>
                     </div>
                 </div>
             </div>

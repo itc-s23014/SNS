@@ -178,28 +178,41 @@
                 </form>
             </div>
         </header>
-        <div class="page-title">投稿一覧</div>
-        <ul>
-          {% for post in posts %}
-            
-              <div class="posts-container">
-                <div class="post-item">
-                  <div class="avatar">{{ post[0][:2] }}</div> 
-                  <div class="post-content">
-                    <div class="post-header">
-                      <span class="username">{{ post[0] }}</span> 
-                    </div>
-        
-                    <div class="post-text">{{ post[1] }}</div>  
-        
-                    <div class="post-actions">
-                    
-                      <button class="action-btn" onclick="toggleCommentForm('{{ post[2] }}')">💬</button>
-        
-                     
-                      <form method="POST" action="/like" style="display:inline;">
-                        <input type="hidden" name="post_id" value="{{ post[2] }}">
-                        <button type="submit" class="like-button" aria-label="いいね">
+
+        <main>
+            <div class="page-title">投稿一覧</div>
+            <div class="posts-container">
+                {% for post in posts %}
+                  <div class="post-item">
+                    <div class="avatar">{{ post[0][:2] }}</div> 
+                    <div class="post-content">
+                      <div class="post-header">
+                        <span class="username">{{ post[0] }}</span> 
+                        
+                        <!-- ★★★★★ここがフォローボタンの変更点★★★★★ -->
+                        {% if post[3] != session['user_id'] %}
+                          <button 
+                            class="follow-button {% if post[3] in followed_user_ids %}following{% endif %}"
+                            data-user-id="{{ post[3] }}">
+                            {% if post[3] in followed_user_ids %}
+                              フォロー中
+                            {% else %}
+                              フォロー
+                            {% endif %}
+                          </button>
+                        {% endif %}
+                        <!-- ★★★★★変更はここまで★★★★★ -->
+                      </div>
+          
+                      <div class="post-text">{{ post[1] }}</div>  
+          
+                      <div class="post-actions">
+                        <button class="action-btn" onclick="toggleCommentForm('{{ post[2] }}')" title="コメント">💬</button>
+                        
+                        <button class="like-button action-btn" 
+                                aria-label="いいね"
+                                data-post-id="{{ post[2] }}"
+                                data-liked="{{ 'true' if post[2] in like_post_ids else 'false' }}">
                           {% if post[2] in like_post_ids %}
                             <span style="color:red;">❤️</span>
                           {% else %}
@@ -226,12 +239,10 @@
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            
-          {% endfor %}
-        </ul>
-        
+                {% endfor %}
+            </div>
+        </main>
+    </div>
 
     <!-- ▼▼▼▼▼ここからJavaScript▼▼▼▼▼ -->
     <script>
